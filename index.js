@@ -5,7 +5,7 @@ const path = require("path");
 const connectDB = require("./utils/db");
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 
 // ✅ Allowed Origins
 const allowedOrigins = [
