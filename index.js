@@ -11,10 +11,15 @@ const port = process.env.PORT || 4000;
 const allowedOrigins = [
   "http://localhost:3000",  // Local frontend (React)
   "http://localhost:5173",  // Local frontend (Vite)
-  "https://admin.zemalt.com", // Admin panel (Live)
+  "https://admin.plutosec.ca",
+  "https://admin.plutosec.ca/", // Admin panel (Live)
   "https://zemalt.com",
-  "https://www.zemalt.com" ,
-  "http://localhost:3001",      // Main Website (Live)
+  "https://www.plutosec.ca",
+  "https://www.plutosec.ca/*" ,
+  "https://www.plutosec.ca/" ,
+  "https://contact.plutosec.ca",
+  "https://contact.plutosec.ca/" ,
+  "http://localhost:3001",
 ];
 
 // ✅ Apply CORS Middleware Before Routes
