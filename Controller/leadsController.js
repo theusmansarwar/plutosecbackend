@@ -29,8 +29,6 @@ const CreateLeads = async (req, res) => {
   
   
 
-  
-
   try {
     const LeadsCreated = await Leads.create({
       name,

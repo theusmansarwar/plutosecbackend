@@ -5,15 +5,15 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: process.env.PEMAIL_USER,
+    pass: process.env.PEMAIL_PASS,
   },
 });
 
 const sendEmailToCompany = ({ email, name, subject, phone, query }, res) => {
   // ✅ 1. Email to the Customer
   const customerMailOptions = {
-    from: `"PlutoSec" <${process.env.EMAIL_USER}>`,
+    from: `"PlutoSec" <${process.env.PEMAIL_USER}>`,
     to: email,
     subject: `Thank You for Reaching Out – Pluto IT Solutions Inc`,
     html: `
@@ -61,8 +61,8 @@ const sendEmailToCompany = ({ email, name, subject, phone, query }, res) => {
 
   // ✅ 2. Email to the Admin
   const adminMailOptions = {
-    from: `"PlutoSec" <${process.env.EMAIL_USER}>`,
-    to: process.env.ADMIN_EMAIL,
+    from: `"PlutoSec" <${process.env.PEMAIL_USER}>`,
+    to: process.env.PADMIN_EMAIL,
     subject: `New Lead from ${name}`,
     html: `
       <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">

@@ -5,21 +5,21 @@ const path = require("path");
 const connectDB = require("./utils/db");
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4000;
 
 // ✅ Allowed Origins
 const allowedOrigins = [
   "http://localhost:3000",  // Local frontend (React)
   "http://localhost:5173",  // Local frontend (Vite)
-  "https://admin.plutosec.ca",
-  "https://admin.plutosec.ca/", // Admin panel (Live)
-  "https://zemalt.com",
-  "https://www.plutosec.ca",
-  "https://www.plutosec.ca/*" ,
-  "https://www.plutosec.ca/" ,
-  "https://contact.plutosec.ca",
-  "https://contact.plutosec.ca/" ,
   "http://localhost:3001",
+  "https://creators-time.blogspot.com" ,
+  "https://creators-time.blogspot.com/"  ,
+  "https://plutosec.ca/",
+  "https://plutosec.ca",,
+  "https://plutosec.ca/*",
+  "https://next-sable-theta.vercel.app/",
+  
+    // Main Website (Live)
 ];
 
 // ✅ Apply CORS Middleware Before Routes
@@ -44,11 +44,25 @@ app.use(express.json());
 
 // ✅ Routes
 const userRouter = require("./Routes/userRoutes");
+const blogRouter = require("./Routes/blogRoutes");
+const commentRouter = require("./Routes/commentRoutes");
+const categoryRouter = require("./Routes/categoryRoutes");
+const testimonialRouter = require("./Routes/testimonialRoutes");
+const adminRoutes = require("./Routes/adminRoutes");
+const viewsRouter = require("./Routes/viewsRoutes");
+const applicationRoutes = require("./Routes/applicationRoutes");
 
 
 // ✅ Use Routes
 app.use("/", userRouter);
+app.use("/admin", adminRoutes);
+app.use("/blog", blogRouter);
+app.use("/comment", commentRouter);
+app.use("/category", categoryRouter);
+app.use("/testimonial", testimonialRouter);
 
+app.use("/views", viewsRouter);
+app.use("/applications", applicationRoutes);
 
 // ✅ Static Folder for Uploads
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
