@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendEmailToCompany = ({ email, name, subject, phone, query }, res) => {
-
+  // ✅ 1. Email to the Customer
   const customerMailOptions = {
     from: `"PlutoSec" <${process.env.EMAIL_USER}>`,
     to: email,
