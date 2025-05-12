@@ -22,7 +22,7 @@ const CreateLeads = async (req, res) => {
   if (!subject) missingFields.push({ name: "subject", message: "Subject field is required" });
   if (!query) missingFields.push({ name: "query", message: "Query field is required" });
   if (!captchaToken) {
-    missingFields.push({ name: "captchaToken", message: "CAPTCHA token is missing" });
+    missingFields.push({ name: "captchaToken", message: "Please fill Captcha" });
   }
 
   if (missingFields.length > 0) {
