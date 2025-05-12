@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmailToCompany = ({ email, name, subject, phone, query }, res) => {
+const sendEmailToCompany = ({ email, name,lastname, subject, phone, query }, res) => {
   // ✅ 1. Email to the Customer
   const customerMailOptions = {
     from: `"PlutoSec" <${process.env.EMAIL_USER}>`,
@@ -34,7 +34,7 @@ const sendEmailToCompany = ({ email, name, subject, phone, query }, res) => {
                 <!-- Body -->
                 <tr>
                   <td style="padding: 20px; text-align: left; color: #333333;">
-                    <p style="margin: 0; font-size: 16px;">Dear ${name},</p>
+                    <p style="margin: 0; font-size: 16px;">Dear ${name} ${lastname},</p>
                     <p style="margin: 16px 0; font-size: 16px;">
                       Thank you for reaching out to <strong>PlutoSec</strong>. We have received your query and our team will get back to you shortly.
                     </p>
@@ -63,7 +63,7 @@ const sendEmailToCompany = ({ email, name, subject, phone, query }, res) => {
   const adminMailOptions = {
     from: `"PlutoSec" <${process.env.EMAIL_USER}>`,
     to: process.env.ADMIN_EMAIL,
-    subject: `New Lead from ${name}`,
+    subject: `New Lead from ${name} ${lastname}`,
     html: `
       <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
         <table cellpadding="0" cellspacing="0" border="0" 

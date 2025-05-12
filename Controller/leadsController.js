@@ -1,10 +1,11 @@
 const Leads = require("../Models/leadsModel");
 const sendEmailToCompany = require("./emailverification");
 const CreateLeads = async (req, res) => {
-  const { name, email, phone, subject, query } = req.body;
+  const { name, lastname, email, phone, subject, query } = req.body;
   const missingFields = [];
 
   if (!name) missingFields.push({ name: "name", message: "Name field is required" });
+  if (!lastname) missingFields.push({ name: "lastname", message: "LastName field is required" });
   if (!email) {
     missingFields.push({ name: "email", message: "Email field is required" });
   } else if (!email.includes("@")) {
@@ -34,12 +35,13 @@ const CreateLeads = async (req, res) => {
   try {
     const LeadsCreated = await Leads.create({
       name,
+      lastname,
       email,
       phone,
       subject,
       query,
     });
-    sendEmailToCompany({ email, name, subject, phone, query }, res);
+    sendEmailToCompany({ email, name,lastname, subject, phone, query }, res);
 
     if (!LeadsCreated) {
       return res.status(500).json({
