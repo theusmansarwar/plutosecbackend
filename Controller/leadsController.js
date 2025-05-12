@@ -1,9 +1,12 @@
 const Leads = require("../Models/leadsModel");
 const sendEmailToCompany = require("./emailverification");
+const axios = require('axios');
+
 const CreateLeads = async (req, res) => {
-  const { name, lastname, email, phone, subject, query } = req.body;
+  const { name, lastname, email, phone, subject, query, captchaToken } = req.body;
   const missingFields = [];
 
+  // Validate required fields
   if (!name) missingFields.push({ name: "name", message: "Name field is required" });
   if (!lastname) missingFields.push({ name: "lastname", message: "LastName field is required" });
   if (!email) {
@@ -11,27 +14,48 @@ const CreateLeads = async (req, res) => {
   } else if (!email.includes("@")) {
     missingFields.push({ name: "email", message: "Email must contain @" });
   }
-  
-  if (!phone) missingFields.push({ name: "phone", message: "Phone field is required" });
-  else if (phone.trim().length < 6) {
+  if (!phone) {
+    missingFields.push({ name: "phone", message: "Phone field is required" });
+  } else if (phone.trim().length < 6) {
     missingFields.push({ name: "phone", message: "Phone is incomplete" });
-}
-
+  }
   if (!subject) missingFields.push({ name: "subject", message: "Subject field is required" });
   if (!query) missingFields.push({ name: "query", message: "Query field is required" });
-  
+  if (!captchaToken) {
+    missingFields.push({ name: "captchaToken", message: "CAPTCHA token is missing" });
+  }
+
   if (missingFields.length > 0) {
     return res.status(400).json({
       status: 400,
-      message: "Some feilds are missing!",
+      message: "Some fields are missing!",
       missingFields,
     });
   }
-  
-  
 
-  
+  // Verify reCAPTCHA token
+  try {
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+    const verificationURL = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captchaToken}`;
 
+    const response = await axios.post(verificationURL);
+    const { success } = response.data;
+
+    if (!success) {
+      return res.status(400).json({
+        status: 400,
+        message: "reCAPTCHA verification failed. Please try again.",
+      });
+    }
+  } catch (error) {
+    console.error("reCAPTCHA verification error:", error);
+    return res.status(500).json({
+      status: 500,
+      message: "Internal server error during CAPTCHA verification",
+    });
+  }
+
+  // Proceed with lead creation
   try {
     const LeadsCreated = await Leads.create({
       name,
@@ -41,7 +65,8 @@ const CreateLeads = async (req, res) => {
       subject,
       query,
     });
-    sendEmailToCompany({ email, name,lastname, subject, phone, query }, res);
+
+    sendEmailToCompany({ email, name, lastname, subject, phone, query }, res);
 
     if (!LeadsCreated) {
       return res.status(500).json({
@@ -62,6 +87,7 @@ const CreateLeads = async (req, res) => {
     });
   }
 };
+
 
 const LeadsList = async (req, res) => {
   try {
