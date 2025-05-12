@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.fastmail.com", // GoDaddy SMTP server
+  host: "smtp.zoho.com", // GoDaddy SMTP server
   port: 465,
   secure: true,
   auth: {
