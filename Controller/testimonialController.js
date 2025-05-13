@@ -121,8 +121,8 @@ const viewTestimonial = async (req, res) => {
       totalTestimonials,
       totalPages: Math.ceil(totalTestimonials / limit),
       currentPage: page,
-      limit,
-      testimonials,
+      limit:limit,
+      testimonials:testimonials,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -134,8 +134,8 @@ const deleteCategory = async (req, res) => {
         totalCategories,
         totalPages: Math.ceil(totalCategories / limit),
         currentPage: page,
-        limit,
-        categories,
+        limit:limit,
+        categories:categories,
       });
     } catch (error) {
       res.status(500).json({ error: error.message });

@@ -104,11 +104,11 @@ const LeadsList = async (req, res) => {
     return res.status(200).json({
       status: 200,
       message: "Leads fetched successfully",
-      leads,
+      leads:leads,
       totalLeads,
-      totalPages: Math.ceil(totalLeads / limit), // Fixed typo
+      totalPages: Math.ceil(totalLeads / limit),
       currentPage: page,
-      limit,
+      limit:limit,
     });
   } catch (err) {
     console.error(err);

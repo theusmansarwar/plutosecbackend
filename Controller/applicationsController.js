@@ -114,11 +114,11 @@ const ApplicationList = async (req, res) => {
     return res.status(200).json({
       status: 200,
       message: "Applications fetched successfully",
-      applications,
+      applications:applications,
       totalApplication,
       totalPages: Math.ceil(totalApplication / limit), 
       currentPage: page,
-      limit,
+      limit:limit,
     });
   } catch (err) {
     console.error(err);

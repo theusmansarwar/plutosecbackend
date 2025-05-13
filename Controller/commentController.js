@@ -113,7 +113,7 @@ const viewComments = async (req, res) => {
   
       res.status(200).json({
         message: "Comments fetched successfully",
-        comments,
+        comments:comments,
 
           totalComments,
           totalPages: Math.ceil(totalComments / limit),
