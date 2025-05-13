@@ -63,24 +63,20 @@ const approveComment = async (req, res) => {
 
     // Ensure status is explicitly true or false
     if (typeof status !== "boolean") {
-      return res
-        .status(400)
-        .json({
-          status: 400,
-          message: "Status is required and must be true or false",
-        });
+      return res.status(400).json({
+        status: 400,
+        message: "Status is required and must be true or false",
+      });
     }
     commentavailable.comment = comment;
     commentavailable.published = status;
     await commentavailable.save();
 
-    return res
-      .status(200)
-      .json({
-        status: 200,
-        message: "Comment status updated successfully",
-        comment,
-      });
+    return res.status(200).json({
+      status: 200,
+      message: "Comment status updated successfully",
+      comment,
+    });
   } catch (error) {
     console.error("Error while approving comment:", error);
     return res.status(500).json({
@@ -92,44 +88,42 @@ const approveComment = async (req, res) => {
 };
 
 const viewComments = async (req, res) => {
-    try {
-      // Get page and limit from query parameters, with default values
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-      const skip = (page - 1) * limit;
-  
-      // Fetch total count for pagination
-      const totalComments = await Comment.countDocuments();
-  
-      const comments = await Comment.find()
-        .populate("blogId", "title")
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit);
-  
-      if (!comments.length) {
-        return res.status(404).json({ message: "No comments found" });
-      }
-  
-      res.status(200).json({
-        message: "Comments fetched successfully",
-        comments:comments,
+  try {
+    // Get page and limit from query parameters, with default values
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const totalComments = await Comment.countDocuments();
 
-          totalComments,
-          totalPages: Math.ceil(totalComments / limit),
-          currentPage: page,
-      
-      });
-    } catch (error) {
-      console.error("Error while fetching comments:", error);
-      res.status(500).json({
-        status: 500,
-        message: "Internal server error",
-        error: error.message,
-      });
+    const comments = await Comment.find()
+      .populate("blogId", "title")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    if (!comments.length) {
+      return res.status(404).json({ message: "No comments found" });
     }
-  };
-  
+
+    res.status(200).json({
+      message: "Comments fetched successfully",
+      comments: comments,
+
+      totalComments,
+      totalPages: Math.ceil(totalComments / limit),
+      currentPage: page,
+      limit:limit,
+    });
+  } catch (error) {
+    console.error("Error while fetching comments:", error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
 const approvedComments = async (req, res) => {
   try {
     const comment = await Comment.find({ published: true }).sort({
