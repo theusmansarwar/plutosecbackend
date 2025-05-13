@@ -101,9 +101,8 @@ const viewComments = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-    if (!comments.length) {
-      return res.status(404).json({ message: "No comments found" });
-    }
+   
+      
 
     res.status(200).json({
       message: "Comments fetched successfully",
@@ -112,7 +111,7 @@ const viewComments = async (req, res) => {
       totalComments,
       totalPages: Math.ceil(totalComments / limit),
       currentPage: page,
-      limit:limit,
+      limit: limit,
     });
   } catch (error) {
     console.error("Error while fetching comments:", error);
@@ -149,18 +148,13 @@ const approvedComments = async (req, res) => {
 const deleteComment = async (req, res) => {
   try {
     const { id } = req.params;
-
     const comment = await Comment.findById(id);
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
-
-    // ✅ Remove comment from the Blog's comments array
     await Blogs.findByIdAndUpdate(comment.blogId, {
       $pull: { comments: id },
     });
-
-    // ✅ Delete the comment
     await Comment.findByIdAndDelete(id);
 
     res.status(200).json({ message: "Comment deleted successfully" });
@@ -176,7 +170,7 @@ const deleteComment = async (req, res) => {
 
 const deleteAllComment = async (req, res) => {
   try {
-    const { ids } = req.body; // Expecting { ids: ["id1", "id2", ...] }
+    const { ids } = req.body;
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       return res
