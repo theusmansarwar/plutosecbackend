@@ -60,49 +60,64 @@ const sendEmailToCompany = ({ email, name,lastname, subject, phone, query }, res
   };
 
   // ✅ 2. Email to the Admin
-  const adminMailOptions = {
-    from: `"PlutoSec" <${process.env.EMAIL_USER}>`,
-    to: process.env.ADMIN_EMAIL,
-    subject: `New Lead from ${name} ${lastname}`,
-    html: `
-      <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
-        <table cellpadding="0" cellspacing="0" border="0" 
-          style="width: 100%; background-color: #f4f4f4; padding: 20px; text-align: center;">
-          <tr>
-            <td>
-              <table cellpadding="0" cellspacing="0" border="0" 
-                style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; 
-                overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                <!-- Header -->
-                <tr>
-                  <td style="background-color: #d9534f; padding: 20px; text-align: center;">
-                    <h1 style="color: #ffffff; margin: 0; font-size: 24px;">New Lead Received</h1>
-                  </td>
-                </tr>
-                <!-- Body -->
-                <tr>
-                  <td style="padding: 20px; text-align: left; color: #333333;">
-                    <p style="margin: 0; font-size: 16px;"><strong>Name:</strong> ${name}</p>
-                    <p style="margin: 0; font-size: 16px;"><strong>Email:</strong> ${email}</p>
-                    <p style="margin: 0; font-size: 16px;"><strong>Phone:</strong> ${phone}</p>
-                    <p style="margin: 0; font-size: 16px;"><strong>Subject:</strong> ${subject}</p>
-                    <p style="margin: 16px 0; font-size: 16px;"><strong>Query:</strong></p>
-                    <p style="margin: 0; font-size: 16px;">${query}</p>
-                  </td>
-                </tr>
-                <!-- Footer -->
-                <tr>
-                  <td style="background-color: #f4f4f4; padding: 10px; text-align: center; font-size: 14px; color: #777777;">
-                    <p style="margin: 0;">This is an automated email. Please do not reply.</p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-    `,
-  };
+const adminMailOptions = {
+  from: `"PlutoSec" <${process.env.EMAIL_USER}>`,
+  to: process.env.ADMIN_EMAIL,
+  subject: `New Lead from ${name} ${lastname}`,
+  html: `
+    <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+      <table cellpadding="0" cellspacing="0" border="0" 
+        style="width: 100%; background-color: #f4f4f4; padding: 20px; text-align: center;">
+        <tr>
+          <td>
+            <table cellpadding="0" cellspacing="0" border="0" 
+              style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; 
+              overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+              
+              <!-- Header -->
+              <tr>
+                <td style="background-color: #d9534f; padding: 20px; text-align: center;">
+                  <h1 style="color: #ffffff; margin: 0; font-size: 24px;">New Lead Received</h1>
+                </td>
+              </tr>
+
+              <!-- Body -->
+              <tr>
+                <td style="padding: 20px; text-align: left; color: #333333;">
+                  <p style="margin: 0; font-size: 16px;"><strong>Name:</strong> ${name}</p>
+                  <p style="margin: 0; font-size: 16px;"><strong>Email:</strong> ${email}</p>
+
+                  <!-- Compose Email Button -->
+                  <p style="margin: 10px 0;">
+                    <a href="mailto:${email}?subject=Re: ${encodeURIComponent(subject)}" 
+                      style="display: inline-block; background-color: #007bff; color: #ffffff; 
+                      padding: 10px 20px; text-decoration: none; border-radius: 4px; 
+                      font-size: 14px;">
+                      Compose Email
+                    </a>
+                  </p>
+
+                  <p style="margin: 0; font-size: 16px;"><strong>Phone:</strong> ${phone}</p>
+                  <p style="margin: 0; font-size: 16px;"><strong>Subject:</strong> ${subject}</p>
+                  <p style="margin: 16px 0; font-size: 16px;"><strong>Query:</strong></p>
+                  <p style="margin: 0; font-size: 16px;">${query}</p>
+                </td>
+              </tr>
+
+              <!-- Footer -->
+              <tr>
+                <td style="background-color: #f4f4f4; padding: 10px; text-align: center; font-size: 14px; color: #777777;">
+                  <p style="margin: 0;">This is an automated email. Please do not reply.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+  `
+};
+
 
   // Send Emails
   transporter.sendMail(customerMailOptions, (error, info) => {
