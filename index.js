@@ -14,6 +14,7 @@ const allowedOrigins = [
   "http://localhost:3001",
   "https://plutosec.ca",
   "https://www.plutosec.ca",
+  "https://pl0tu.plutosec.ca",
 ];
 
 // ✅ CORS Options
