@@ -148,8 +148,6 @@ const stats = async (req, res) => {
     const totalImpressions = totalImpressionRecord ? totalImpressionRecord.totalImpression : 0;
 
     const totalComments = await Comment.countDocuments();
-    const totalUsers = await User.countDocuments();
-    const totalServices = await Service.countDocuments();
 
     return res.status(200).json({
       message: "Data fetched successfully",
@@ -161,8 +159,7 @@ const stats = async (req, res) => {
       yesterdayImpression, // ✅ Fixed yesterday's impressions
       totalImpressions, // ✅ All-time impressions count
       totalComments,
-      totalUsers,
-      totalServices,
+
     });
   } catch (error) {
     return res.status(500).json({ message: "Error fetching data", error });
