@@ -4,6 +4,7 @@ const Comment = require("../Models/commentModel");
 const Blogs = require("../Models/blogModel");
 const Leads = require("../Models/leadsModel");
 const { View, TotalImpression } = require("../Models/viewModel");
+const Application = require("../Models/applicationModel");
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -120,6 +121,7 @@ const stats = async (req, res) => {
     // ✅ Counts
     const totalBlogs = await Blogs.countDocuments();
     const totalLeads = await Leads.countDocuments();
+    const totalApplications = await Application.countDocuments();
 
     // ✅ Leads
     const todayLeads = await Leads.countDocuments({
@@ -130,6 +132,13 @@ const stats = async (req, res) => {
       createdAt: { $gte: yesterdayStart, $lte: yesterdayEnd }
     });
 
+    const todayApplications = await Application.countDocuments({
+      createdAt: { $gte: todayStart, $lte: todayEnd }
+    });
+
+    const yesterdayApplications = await Application.countDocuments({
+      createdAt: { $gte: yesterdayStart, $lte: yesterdayEnd }
+    });
     // ✅ Views/Impressions (Use `$gte` and `$lt` for date range)
     const todayImpressionData = await View.findOne({
       date: { $gte: todayStart, $lte: todayEnd }
@@ -152,6 +161,9 @@ const stats = async (req, res) => {
     return res.status(200).json({
       message: "Data fetched successfully",
       totalBlogs,
+       totalApplications,
+      todayApplications,
+      yesterdayApplications,
       totalLeads,
       todayLeads,
       yesterdayLeads, // ✅ Fixed yesterday's leads
