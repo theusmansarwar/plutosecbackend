@@ -376,28 +376,33 @@ const viewblog = async (req, res) => {
   try {
     const { slug } = req.params;
 
+    // Initial check if blog exists and get published comments
     let blog = await Blogs.findOne({ slug, published: true })
       .populate({
         path: "comments",
         match: { published: true },
         options: { sort: { createdAt: -1 } },
       })
-      .populate("category"); 
+      .populate("category");
 
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });
     }
- const commentsCount = blog.comments.length || 0;
-    // ✅ Check if the IP exists in viewedBy array
 
+    // Increment views and re-fetch blog with filtered comments
     blog = await Blogs.findOneAndUpdate(
       { slug },
-      { $inc: { views: 1 } }, // Increase view count
-      { new: true } // Return updated document
+      { $inc: { views: 1 } },
+      { new: true }
     )
-      // ✅ Repopulate fields after update
+      .populate({
+        path: "comments",
+        match: { published: true },
+        options: { sort: { createdAt: -1 } },
+      })
+      .populate("category");
 
-   
+    const commentsCount = blog.comments.length || 0;
 
     return res.status(200).json({
       message: "Blog fetched successfully",
@@ -413,6 +418,7 @@ const viewblog = async (req, res) => {
     });
   }
 };
+
 const viewblogbyid = async (req, res) => {
   try {
     const { id } = req.params;
