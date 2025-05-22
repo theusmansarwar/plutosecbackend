@@ -49,7 +49,7 @@ const testimonialRouter = require("./Routes/testimonialRoutes");
 const adminRoutes = require("./Routes/adminRoutes");
 const viewsRouter = require("./Routes/viewsRoutes");
 const applicationRoutes = require("./Routes/applicationRoutes");
-
+const newsletterRoutes= require("./Routes/newsletterRoutes")
 app.use("/", userRouter);
 app.use("/admin", adminRoutes);
 app.use("/blog", blogRouter);
@@ -58,6 +58,7 @@ app.use("/category", categoryRouter);
 app.use("/testimonial", testimonialRouter);
 app.use("/views", viewsRouter);
 app.use("/applications", applicationRoutes);
+app.use("/newsletter", newsletterRoutes);
 
 // ✅ Static Files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

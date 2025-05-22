@@ -375,8 +375,6 @@ const listblogAdmin = async (req, res) => {
 const viewblog = async (req, res) => {
   try {
     const { slug } = req.params;
-
-    // Initial check if blog exists and get published comments
     let blog = await Blogs.findOne({ slug, published: true })
       .populate({
         path: "comments",
@@ -384,12 +382,9 @@ const viewblog = async (req, res) => {
         options: { sort: { createdAt: -1 } },
       })
       .populate("category");
-
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });
     }
-
-    // Increment views and re-fetch blog with filtered comments
     blog = await Blogs.findOneAndUpdate(
       { slug },
       { $inc: { views: 1 } },
@@ -401,9 +396,7 @@ const viewblog = async (req, res) => {
         options: { sort: { createdAt: -1 } },
       })
       .populate("category");
-
     const commentsCount = blog.comments.length || 0;
-
     return res.status(200).json({
       message: "Blog fetched successfully",
       blog,
@@ -418,20 +411,14 @@ const viewblog = async (req, res) => {
     });
   }
 };
-
 const viewblogbyid = async (req, res) => {
   try {
     const { id } = req.params;
-
-    // Correct way to find by ID
     let blog = await Blogs.findById(id);
-
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });
     }
-
     const commentsCount = blog.comments ? blog.comments.length : 0;
-
     return res.status(200).json({
       message: "Blog fetched successfully",
       blog,
