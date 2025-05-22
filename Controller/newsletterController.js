@@ -13,6 +13,13 @@ const addEmail = async (req, res) => {
        
       });
     }
+    else if (!email.includes("@")) {
+   return res.status(400).json({
+        status: 400,
+        message: "Email must contain @",
+       
+      });
+  }
 
     email = email.trim().toLowerCase();
 

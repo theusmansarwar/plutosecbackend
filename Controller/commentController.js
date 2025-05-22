@@ -38,7 +38,7 @@ const addComment = async (req, res) => {
 
     return res.status(201).json({
       status: 201,
-      message: "Comment Submit Successfully.",
+      message: "Comment added.",
     });
   } catch (error) {
     console.error("Error while comment:", error);
