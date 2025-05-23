@@ -434,6 +434,27 @@ const viewblogbyid = async (req, res) => {
     });
   }
 };
+const getblogSlugs = async (req, res) => {
+  try {
+    const blogslist = await Blogs.find({ published: true })
+      .select("slug _id title")
+      .sort({ publishedDate: -1 });
+
+    const totalBlogs = await Blogs.countDocuments({ published: true });
+
+    res.status(200).json({
+      totalBlogs,
+      slugs: blogslist,
+    });
+  } catch (error) {
+    console.error("Error fetching blog slugs:", error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   createblog: [upload.single("thumbnail"), createblog],
@@ -444,4 +465,5 @@ module.exports = {
   deletemultiblog,
   listblogAdmin,
   viewblogbyid,
+  getblogSlugs
 };
