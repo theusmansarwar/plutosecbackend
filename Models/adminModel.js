@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    type: {
+      _id: { type: mongoose.Schema.Types.ObjectId, ref: "UserType" },
+      name: { type: String },
+    },
   },
   { timestamps: true }
 );

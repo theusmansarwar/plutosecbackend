@@ -72,7 +72,6 @@ const deleteCategory = async (req, res) => {
         });
       }
   
-      // ✅ Delete the category if no linked blogs
       const category = await Category.findByIdAndDelete(id);
       if (!category) return res.status(404).json({ message: "Category not found" });
   
@@ -83,17 +82,13 @@ const deleteCategory = async (req, res) => {
   };
   const deleteAllCategories = async (req, res) => {
     try {
-      const { ids } = req.body; // Expecting { ids: ["id1", "id2", ...] }
+      const { ids } = req.body; 
   
       if (!ids || !Array.isArray(ids) || ids.length === 0) {
         return res.status(400).json({ message: "Invalid request. Provide category IDs." });
       }
       const linkedBlogs = await Blogs.find({ category: { $in: ids } }).select("title _id category");
-  
-      // ✅ Extract category IDs that have linked blogs
       const categoriesWithBlogs = [...new Set(linkedBlogs.map(blog => blog.category.toString()))];
-  
-      // ✅ Filter out categories that can be deleted
       const categoriesToDelete = ids.filter(id => !categoriesWithBlogs.includes(id));
   
       if (categoriesToDelete.length === 0) {
@@ -103,7 +98,6 @@ const deleteCategory = async (req, res) => {
         });
       }
   
-      // ✅ Delete categories that are not linked to any blogs
       await Category.deleteMany({ _id: { $in: categoriesToDelete } });
   
       res.status(200).json({
