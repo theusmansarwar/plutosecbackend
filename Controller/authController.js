@@ -68,7 +68,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !email.includes("@.")) {
+  if (!email || !email.includes("@")) {
     return res.status(400).json({
       status: 400,
       message: "Email field must contain @",
