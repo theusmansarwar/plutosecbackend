@@ -4,8 +4,6 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const Category = require("../Models/categoryModel");
-const NewsLetter = require("../Models/newsletterModel");
-const sendEmailToUser = require("./newsletteremail");
 const uploadDir = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
