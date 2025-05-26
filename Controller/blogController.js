@@ -4,8 +4,8 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const Category = require("../Models/categoryModel");
-
-// Ensure uploads directory exists
+const NewsLetter = require("../Models/newsletterModel");
+const sendEmailToUser = require("./newsletteremail");
 const uploadDir = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -46,78 +46,40 @@ const createblog = async (req, res) => {
       category,
       published,
       publishedDate,
+      faqSchema
     } = req.body;
 
     const thumbnail = req.file ? `/uploads/${req.file.filename}` : null;
-
     const missingFields = [];
 
-    if (published === "true" || published === true) {
-      if (!title)
-        missingFields.push({ name: "title", message: "Title is required" });
-      if (!description)
-        missingFields.push({
-          name: "description",
-          message: "Description is required",
-        });
-      if (!detail)
-        missingFields.push({ name: "detail", message: "Detail is required" });
-      if (!author)
-        missingFields.push({ name: "author", message: "Author is required" });
-      if (!tags)
-        missingFields.push({ name: "tags", message: "Tags are required" });
-      if (!metaDescription)
-        missingFields.push({
-          name: "metaDescription",
-          message: "Meta description is required",
-        });
-      if (!slug)
-        missingFields.push({ name: "slug", message: "Slug is required" });
-      if (!thumbnail)
-        missingFields.push({
-          name: "thumbnail",
-          message: "Thumbnail (image) is required",
-        });
-      if (!category)
-        missingFields.push({
-          name: "category",
-          message: "Category is required",
-        });
-      if (!publishedDate)
-        missingFields.push({
-          name: "publishedDate",
-          message: "Published Date is required",
-        });
+    const isPublished = published === "true" || published === true;
+    if (isPublished) {
+      if (!title) missingFields.push({ name: "title", message: "Title is required" });
+      if (!description) missingFields.push({ name: "description", message: "Description is required" });
+      if (!detail) missingFields.push({ name: "detail", message: "Detail is required" });
+      if (!author) missingFields.push({ name: "author", message: "Author is required" });
+      if (!tags) missingFields.push({ name: "tags", message: "Tags are required" });
+      if (!metaDescription) missingFields.push({ name: "metaDescription", message: "Meta description is required" });
+      if (!slug) missingFields.push({ name: "slug", message: "Slug is required" });
+      if (!thumbnail) missingFields.push({ name: "thumbnail", message: "Thumbnail (image) is required" });
+      if (!category) missingFields.push({ name: "category", message: "Category is required" });
+      if (!publishedDate) missingFields.push({ name: "publishedDate", message: "Published Date is required" });
 
       if (missingFields.length > 0) {
-        return res.status(400).json({
-          status: 400,
-          message: "Some fields are missing!",
-          missingFields,
-        });
+        return res.status(400).json({ status: 400, message: "Some fields are missing!", missingFields });
       }
 
-      const existingTitle = await Blogs.findOne({ title });
-      if (existingTitle) {
-        return res.status(400).json({ message: "Blog Title already exists" });
-      }
-
-      const existingSlug = await Blogs.findOne({ slug });
-      if (existingSlug) {
-        return res.status(400).json({ message: "Blog Slug already exists" });
-      }
+      const [existingTitle, existingSlug] = await Promise.all([
+        Blogs.findOne({ title }),
+        Blogs.findOne({ slug })
+      ]);
+      if (existingTitle) return res.status(400).json({ message: "Blog Title already exists" });
+      if (existingSlug) return res.status(400).json({ message: "Blog Slug already exists" });
     }
 
-    const tagsArray = Array.isArray(tags)
-      ? tags
-      : tags
-      ? tags.split(",").map((tag) => tag.trim())
-      : [];
-
+    const tagsArray = Array.isArray(tags) ? tags : (tags ? tags.split(",").map(tag => tag.trim()) : []);
     const categoryExists = await Category.findById(category);
-    if (!categoryExists) {
-      return res.status(400).json({ message: "Invalid category ID" });
-    }
+    if (!categoryExists) return res.status(400).json({ message: "Invalid category ID" });
 
     const newBlog = await Blogs.create({
       title,
@@ -128,25 +90,16 @@ const createblog = async (req, res) => {
       thumbnail,
       tags: tagsArray,
       metaDescription,
-      published: published === "true" || published === true,
+      published: isPublished,
       publishedDate,
       category: { _id: categoryExists._id, name: categoryExists.name },
+      faqSchema
     });
 
-    res
-      .status(201)
-      .json({
-        status: 201,
-        message: "Blog created successfully",
-        blog: newBlog,
-      });
+    res.status(201).json({ status: 201, message: "Blog created successfully", blog: newBlog });
   } catch (error) {
     console.error("Error creating blog:", error);
-    res.status(500).json({
-      status: 500,
-      message: "Internal server error",
-      error: error.message,
-    });
+    res.status(500).json({ status: 500, message: "Internal server error", error: error.message });
   }
 };
 
@@ -164,75 +117,45 @@ const updateblog = async (req, res) => {
       published,
       category,
       publishedDate,
+      faqSchema
     } = req.body;
 
     const thumbnail = req.file ? `/uploads/${req.file.filename}` : null;
+    const isPublished = published === "true" || published === true;
 
-    if (typeof published === "string") {
-      published = published === "true";
-    }
+    const blog = await Blogs.findById(id);
+    if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    const existingBlog = await Blogs.findById(id);
-    if (!existingBlog) {
-      return res.status(404).json({ message: "Blog not found" });
-    }
-
-    let updatedCategory = existingBlog.category;
     if (category) {
       const categoryExists = await Category.findById(category);
-      if (!categoryExists) {
-        return res.status(400).json({ message: "Invalid category ID" });
-      }
-      updatedCategory = { _id: categoryExists._id, name: categoryExists.name };
+      if (!categoryExists) return res.status(400).json({ message: "Invalid category ID" });
+      blog.category = { _id: categoryExists._id, name: categoryExists.name };
     }
 
-    if (tags && typeof tags === "string") {
-      tags = tags.split(",").map((tag) => tag.trim());
-    }
-
-    existingBlog.title = title || existingBlog.title;
-    existingBlog.description = description || existingBlog.description;
-    existingBlog.detail = detail || existingBlog.detail;
-    existingBlog.author = author || existingBlog.author;
-    existingBlog.slug = slug || existingBlog.slug;
-    existingBlog.tags = tags || existingBlog.tags;
-    existingBlog.metaDescription =
-      metaDescription || existingBlog.metaDescription;
-    existingBlog.category = updatedCategory;
-    existingBlog.publishedDate = publishedDate;
-
-    existingBlog.published = published;
+    blog.title = title || blog.title;
+    blog.description = description || blog.description;
+    blog.detail = detail || blog.detail;
+    blog.author = author || blog.author;
+    blog.slug = slug || blog.slug;
+    blog.tags = typeof tags === "string" ? tags.split(",").map(tag => tag.trim()) : tags || blog.tags;
+    blog.metaDescription = metaDescription || blog.metaDescription;
+    blog.published = isPublished;
+    blog.publishedDate = publishedDate;
+    blog.faqSchema = faqSchema;
 
     if (thumbnail) {
-      if (existingBlog.thumbnail) {
-        const oldThumbnailPath = path.join(
-          __dirname,
-          "..",
-          existingBlog.thumbnail
-        );
-        if (fs.existsSync(oldThumbnailPath)) {
-          fs.unlinkSync(oldThumbnailPath);
-        }
+      if (blog.thumbnail) {
+        const oldPath = path.join(__dirname, "..", blog.thumbnail);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
       }
-      existingBlog.thumbnail = thumbnail;
+      blog.thumbnail = thumbnail;
     }
 
-    await existingBlog.save();
-
-    res
-      .status(200)
-      .json({
-        status: 200,
-        message: "Blog updated successfully",
-        blog: existingBlog,
-      });
+    await blog.save();
+    res.status(200).json({ status: 200, message: "Blog updated successfully", blog });
   } catch (error) {
     console.error("Error updating blog:", error);
-    res.status(500).json({
-      status: 500,
-      message: "Internal server error",
-      error: error.message,
-    });
+    res.status(500).json({ status: 500, message: "Internal server error", error: error.message });
   }
 };
 
@@ -465,5 +388,5 @@ module.exports = {
   deletemultiblog,
   listblogAdmin,
   viewblogbyid,
-  getblogSlugs
+  getblogSlugs,
 };

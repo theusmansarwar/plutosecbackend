@@ -9,10 +9,10 @@ const Application = require("../Models/applicationModel");
 const register = async (req, res) => {
   const { name, email, password } = req.body;
 
-  if (!email || !email.includes("@gmail.com")) {
+  if (!email || !email.includes("@")) {
     return res.status(400).json({
       status: 400,
-      message: "Email field must contain @gmail.com",
+      message: "Email field must contain @",
     });
   }
   if (!name) {
@@ -68,10 +68,10 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !email.includes("@gmail.com")) {
+  if (!email || !email.includes("@.")) {
     return res.status(400).json({
       status: 400,
-      message: "Email field must contain @gmail.com",
+      message: "Email field must contain @",
     });
   }
   if (!password) {
@@ -104,14 +104,12 @@ const login = async (req, res) => {
 
 const stats = async (req, res) => {
   try {
-    // ✅ TODAY
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
 
     const todayEnd = new Date();
     todayEnd.setHours(23, 59, 59, 999);
 
-    // ✅ YESTERDAY
     const yesterdayStart = new Date(todayStart);
     yesterdayStart.setDate(yesterdayStart.getDate() - 1);
 
@@ -139,7 +137,7 @@ const stats = async (req, res) => {
     const yesterdayApplications = await Application.countDocuments({
       createdAt: { $gte: yesterdayStart, $lte: yesterdayEnd }
     });
-    // ✅ Views/Impressions (Use `$gte` and `$lt` for date range)
+
     const todayImpressionData = await View.findOne({
       date: { $gte: todayStart, $lte: todayEnd }
     });
@@ -166,10 +164,10 @@ const stats = async (req, res) => {
       yesterdayApplications,
       totalLeads,
       todayLeads,
-      yesterdayLeads, // ✅ Fixed yesterday's leads
+      yesterdayLeads,
       todayImpression,
-      yesterdayImpression, // ✅ Fixed yesterday's impressions
-      totalImpressions, // ✅ All-time impressions count
+      yesterdayImpression,
+      totalImpressions,
       totalComments,
 
     });

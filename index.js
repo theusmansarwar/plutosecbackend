@@ -60,10 +60,8 @@ app.use("/views", viewsRouter);
 app.use("/applications", applicationRoutes);
 app.use("/newsletter", newsletterRoutes);
 
-// ✅ Static Files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// ✅ DB Connection & Start Server
 connectDB().then(() => {
   app.listen(port, () => {
     console.log(`🚀 Server is running on Port: ${port}`);
