@@ -278,35 +278,39 @@ const deleteUser = async (req, res) => {
   }
 };
 
+
+
 const deleteMultipleUsers = async (req, res) => {
   try {
-    const { ids } = req.body; // Expecting an array of blog IDs
+    const { ids } = req.body;
 
     if (!Array.isArray(ids) || ids.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Invalid or empty list of blog IDs" });
+      return res.status(400).json({ message: "Invalid or empty list of user IDs" });
     }
 
-   
-    const users = await User.find({ _id: { $in: ids } });
+    // ✅ Filter only valid MongoDB ObjectIds
+    const validIds = ids.filter(id => mongoose.Types.ObjectId.isValid(id));
+
+    if (validIds.length === 0) {
+      return res.status(400).json({ message: "No valid user IDs provided" });
+    }
+
+    // ✅ Check if users exist
+    const users = await User.find({ _id: { $in: validIds } });
 
     if (users.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No users found with the given IDs" });
+      return res.status(404).json({ message: "No users found with the given IDs" });
     }
-   
 
+    // ✅ Delete users
+    await User.deleteMany({ _id: { $in: validIds } });
 
-    // ✅ Delete blogs in one go
-    await User.deleteMany({ _id: { $in: ids } });
-
-    res
-      .status(200)
-      .json({ status: 200, message: "Users deleted successfully" });
+    res.status(200).json({
+      status: 200,
+      message: `${users.length} user(s) deleted successfully`,
+    });
   } catch (error) {
-    console.error("Error deleting blogs:", error);
+    console.error("Error deleting users:", error);
     res.status(500).json({
       status: 500,
       message: "Internal server error",
@@ -314,6 +318,7 @@ const deleteMultipleUsers = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   register,
