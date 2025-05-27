@@ -22,12 +22,13 @@ const register = async (req, res) => {
       message: "Name field is required",
     });
   }
-  if (!password) {
-    return res.status(400).json({
-      status: 400,
-      message: "Password field is required",
-    });
-  }
+ 
+  if (!password || typeof password !== "string") {
+  return res.status(400).json({
+    status: 400,
+    message: "Password field is required and must be a string",
+  });
+}
   if (!typeId) {
     return res.status(400).json({
       status: 400,
