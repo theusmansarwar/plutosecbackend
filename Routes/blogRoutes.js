@@ -10,7 +10,8 @@ const {
     deletemultiblog,
     listblogAdmin,
     viewblogbyid,
-    getblogSlugs
+    getblogSlugs,
+    listblogWritter
 } = require("../Controller/blogController");
 const authMiddleware = require("../Middleware/authMiddleware");
 
@@ -25,6 +26,7 @@ router.get('/viewbyid/:id',authMiddleware, viewblogbyid);
 router.get('/list', listblog);
 router.get('/sluglist', getblogSlugs);
 router.get('/adminlist',authMiddleware, listblogAdmin);
+router.get('/writerlist',authMiddleware, listblogWritter);
 
 
 
