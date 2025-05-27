@@ -74,12 +74,13 @@ const register = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Registration error:", err);
-    res.status(500).json({
-      status: 500,
-      message: "Internal server error",
-    });
-  }
+  console.error("Registration error:", err);  // You already have this
+  res.status(500).json({
+    status: 500,
+    message: "Internal server error",
+    error: err.message,  // Add this to see the actual error message
+  });
+}
 };
 
 const login = async (req, res) => {
