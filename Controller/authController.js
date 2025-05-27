@@ -104,8 +104,8 @@ const login = async (req, res) => {
       message: "Email not found",
     });
   } else {
-    const matchPassword = await bcrypt.compare(password, user.password);
-    if (matchPassword) {
+    // const matchPassword = await bcrypt.compare(password, user.password);
+    if (user.password === password) {
       const { password: _, ...userWithoutPassword } = user.toObject();
       res.status(200).json({
         status: 200,
