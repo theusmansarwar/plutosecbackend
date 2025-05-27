@@ -282,16 +282,35 @@ const deleteUser = async (req, res) => {
 const deleteMultipleUsers = async (req, res) => {
   try {
     const { ids } = req.body; // Expecting: { ids: ["id1", "id2", ...] }
+
     if (!Array.isArray(ids) || ids.length === 0) {
       return res.status(400).json({ status: 400, message: "No user IDs provided" });
     }
 
-    const result = await User.deleteMany({ _id: { $in: ids } });
-    res.status(200).json({ status: 200, message: `${result.deletedCount} user(s) deleted` });
+    // ✅ Find users first
+    const users = await User.find({ _id: { $in: ids } });
+
+    if (users.length === 0) {
+      return res.status(404).json({ status: 404, message: "No users found with the given IDs" });
+    }
+
+    // ✅ Delete users
+    await User.deleteMany({ _id: { $in: ids } });
+
+    res.status(200).json({ 
+      status: 200, 
+      message: `${users.length} user(s) deleted successfully` 
+    });
   } catch (error) {
-    res.status(500).json({ status: 500, message: "Failed to delete users", error });
+    console.error("Error deleting users:", error);
+    res.status(500).json({ 
+      status: 500, 
+      message: "Failed to delete users", 
+      error: error.message 
+    });
   }
 };
+
 module.exports = {
   register,
   stats,
