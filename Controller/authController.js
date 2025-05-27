@@ -6,7 +6,7 @@ const Leads = require("../Models/leadsModel");
 const { View, TotalImpression } = require("../Models/viewModel");
 const Application = require("../Models/applicationModel");
 const UserType = require("../Models/typeModel");
-
+const mongoose = require("mongoose");
 const register = async (req, res) => {
   const { name, email, password, typeId } = req.body;
 
@@ -278,35 +278,39 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// ✅ Multi delete users
 const deleteMultipleUsers = async (req, res) => {
   try {
-    const { ids } = req.body; // Expecting: { ids: ["id1", "id2", ...] }
+    const { ids } = req.body; // Expecting an array of blog IDs
 
     if (!Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).json({ status: 400, message: "No user IDs provided" });
+      return res
+        .status(400)
+        .json({ message: "Invalid or empty list of blog IDs" });
     }
 
-    // ✅ Find users first
+   
     const users = await User.find({ _id: { $in: ids } });
 
     if (users.length === 0) {
-      return res.status(404).json({ status: 404, message: "No users found with the given IDs" });
+      return res
+        .status(404)
+        .json({ message: "No users found with the given IDs" });
     }
+   
 
-    // ✅ Delete users
+
+    // ✅ Delete blogs in one go
     await User.deleteMany({ _id: { $in: ids } });
 
-    res.status(200).json({ 
-      status: 200, 
-      message: `${users.length} user(s) deleted successfully` 
-    });
+    res
+      .status(200)
+      .json({ status: 200, message: "Users deleted successfully" });
   } catch (error) {
-    console.error("Error deleting users:", error);
-    res.status(500).json({ 
-      status: 500, 
-      message: "Failed to delete users", 
-      error: error.message 
+    console.error("Error deleting blogs:", error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
     });
   }
 };
