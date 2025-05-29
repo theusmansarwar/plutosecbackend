@@ -51,6 +51,7 @@ const adminRoutes = require("./Routes/adminRoutes");
 const viewsRouter = require("./Routes/viewsRoutes");
 const applicationRoutes = require("./Routes/applicationRoutes");
 const newsletterRoutes= require("./Routes/newsletterRoutes")
+const ticketsRoutes= require("./Routes/ticketRoutes")
 app.use("/", userRouter);
 app.use("/admin", adminRoutes);
 app.use("/blog", blogRouter);
@@ -61,7 +62,7 @@ app.use("/testimonial", testimonialRouter);
 app.use("/views", viewsRouter);
 app.use("/applications", applicationRoutes);
 app.use("/newsletter", newsletterRoutes);
-
+app.use("/ticket", ticketsRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 connectDB().then(() => {
