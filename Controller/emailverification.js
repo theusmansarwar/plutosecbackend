@@ -137,7 +137,7 @@ const adminMailOptions = {
   });
 };
 const sendEmailToUser = ({ TicketId, clientemail, name, ticketNO }, res) => {
-  const ticketLink = `http://localhost:5173/ticket/${TicketId}`;
+  const ticketLink = `https://crm.plutosec.ca/ticket/${TicketId}`;
 
   const customerMailOptions = {
     from: `"PlutoSec" <${process.env.EMAIL_USER}>`,
