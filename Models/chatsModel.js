@@ -11,6 +11,7 @@ const ChatsSchema = new mongoose.Schema(
     receiveremail: { type: String, required: true },
     message: { type: String },
     file: { type: String },
+    fileName: { type: String },
   },
   { timestamps: true }
 );

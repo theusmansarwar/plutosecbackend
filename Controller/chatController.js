@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage});
 const addMessage = async (req, res) => {
   try {
-    const { TicketId, message, senderemail,receiveremail } = req.body;
+    const { TicketId, message, senderemail,receiveremail,fileName } = req.body;
     const file = req.file ? `/uploads/${req.file.filename}` : null;
     const missingFields = [];
 
@@ -51,6 +51,7 @@ const addMessage = async (req, res) => {
       senderemail,
       receiveremail,
       file,
+      fileName,
       message,
     });
 
