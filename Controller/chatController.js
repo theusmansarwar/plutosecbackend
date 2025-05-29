@@ -4,7 +4,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-const uploadDir = path.join(__dirname, "../chatsFiles");
+const uploadDir = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -22,7 +22,7 @@ const upload = multer({ storage: storage});
 const addMessage = async (req, res) => {
   try {
     const { TicketId, message, senderemail,receiveremail } = req.body;
-    const file = req.file ? `/chatsFiles/${req.file.filename}` : null;
+    const file = req.file ? `/uploads/${req.file.filename}` : null;
     const missingFields = [];
 
     if (!TicketId)
