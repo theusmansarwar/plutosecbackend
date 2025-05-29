@@ -49,12 +49,12 @@ const GetTicketById = async (req, res) => {
   try {
     const { id } = req.params; 
 
-    const lead = await Tickets.findById(id).populate({
+    const ticket = await Tickets.findById(id).populate({
         path: "chats",
        
       });
 
-    if (!lead) {
+    if (!ticket) {
       return res.status(404).json({
         status: 404,
         message: "Ticket not found",
@@ -64,7 +64,7 @@ const GetTicketById = async (req, res) => {
     return res.status(200).json({
       status: 200,
       message: "Ticket fetched successfully",
-      lead,
+      ticket,
     });
   } catch (err) {
     console.error(err);
@@ -74,10 +74,34 @@ const GetTicketById = async (req, res) => {
     });
   }
 };
+const listtickets = async (req, res) => {
+  try {
+   
+    const ticketslist = await Tickets.find()
+      .select("-chats")
+      .sort({ publishedDate: -1 })
+      
 
+    const totalTickets = await Tickets.countDocuments();
+
+    res.status(200).json({
+      totalTickets,
+     
+      ticketslist,
+    });
+  } catch (error) {
+    console.error("Error fetching Tickets:", error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   CreateTicket,
 
   GetTicketById,
+  listtickets
 };
