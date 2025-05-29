@@ -15,6 +15,7 @@ const allowedOrigins = [
   "https://plutosec.ca",
   "https://www.plutosec.ca",
   "https://pl0tu.plutosec.ca",
+  "https://crm.plutosec.ca",
 ];
 
 // ✅ CORS Options
