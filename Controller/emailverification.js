@@ -136,13 +136,13 @@ const adminMailOptions = {
     });
   });
 };
-const sendEmailToUser = ({ TicketId, clientemail, name }, res) => {
+const sendEmailToUser = ({ TicketId, clientemail, name, ticketNO }, res) => {
   const ticketLink = `http://localhost:5173/ticket/${TicketId}`;
 
   const customerMailOptions = {
     from: `"PlutoSec" <${process.env.EMAIL_USER}>`,
     to: clientemail,
-    subject: `New Ticket Created – PlutoSec Support`,
+    subject: `#${ticketNO} New Ticket Created – PlutoSec Support`,
     html: `
       <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
         <table cellpadding="0" cellspacing="0" border="0" 
