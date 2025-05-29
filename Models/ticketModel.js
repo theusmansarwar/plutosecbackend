@@ -7,6 +7,7 @@ const TicketSchema = new mongoose.Schema(
     receivername: { type: String, required:true},
     clientemail: { type: String, required:true},
     receiveremail: { type: String, required:true},
+     subject: { type: String, required:true},
      chats: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chats" }],
    
     

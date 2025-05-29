@@ -24,7 +24,8 @@ const CreateTicket = async (req, res) => {
       clientemail: LeadsData.email,
       clientname: LeadsData.name,
       receivername:"admin",
-      receiveremail:"admin@plutosec.ca"
+      receiveremail:"admin@plutosec.ca",
+      subject:LeadsData.subject,
     });
     sendEmailToUser({ TicketId:generateTicket._id, clientemail: LeadsData.email,name:LeadsData.name}, res);
 
@@ -42,6 +43,32 @@ const CreateTicket = async (req, res) => {
   }
 };
 
+const GetTicketById = async (req, res) => {
+  try {
+    const { id } = req.params; 
+
+    const lead = await Tickets.findById(id);
+
+    if (!lead) {
+      return res.status(404).json({
+        status: 404,
+        message: "Ticket not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: 200,
+      message: "Ticket fetched successfully",
+      lead,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+    });
+  }
+};
 const LeadsList = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -62,33 +89,6 @@ const LeadsList = async (req, res) => {
       totalPages: Math.ceil(totalLeads / limit),
       currentPage: page,
       limit: limit,
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      status: 500,
-      message: "Internal server error",
-    });
-  }
-};
-
-const GetLeadById = async (req, res) => {
-  try {
-    const { id } = req.params; // Get lead ID from request parameters
-
-    const lead = await Leads.findById(id);
-
-    if (!lead) {
-      return res.status(404).json({
-        status: 404,
-        message: "Lead not found",
-      });
-    }
-
-    return res.status(200).json({
-      status: 200,
-      message: "Lead fetched successfully",
-      lead,
     });
   } catch (err) {
     console.error(err);
@@ -137,6 +137,6 @@ const DeleteLeads = async (req, res) => {
 module.exports = {
   CreateTicket,
   LeadsList,
-  GetLeadById,
+  GetTicketById,
   DeleteLeads,
 };
