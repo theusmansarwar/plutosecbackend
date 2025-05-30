@@ -1,5 +1,5 @@
 const Leads = require("../Models/leadsModel");
-const sendEmailToCompany = require("./emailverification");
+const {sendEmailToCompany} = require("./emailverification");
 const axios = require('axios');
 
 const CreateLeads = async (req, res) => {
