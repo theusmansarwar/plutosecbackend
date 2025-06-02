@@ -25,8 +25,8 @@ const CreateTicket = async (req, res) => {
       ticketNO: totalTickets.toString().padStart(4, '0'),
       clientemail: LeadsData.email,
       clientname: LeadsData.name,
-      receivername:"admin",
-      receiveremail:"admin@plutosec.ca",
+      receivername:"PlutoSec Support Team",
+      receiveremail:"contact@plutosec.ca",
       subject:LeadsData.subject,
     });
     sendEmailToUser({ TicketId:generateTicket._id, clientemail: LeadsData.email,name:LeadsData.name, ticketNO:generateTicket.ticketNO}, res);
