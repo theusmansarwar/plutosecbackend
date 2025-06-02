@@ -204,8 +204,8 @@ const sendEmailToUser = ({ TicketId, clientemail, name, ticketNO }, res) => {
   });
 };
 const sendNewMessageEmailToReceiver = ({ TicketId, receiveremail, receivername }, res) => {
-  const ticketLink = `http://localhost:3000/ticket/${TicketId}`;
-  const ticketLink2 = `http://localhost:3000/ticketviewbyadmin/${TicketId}`;
+  const ticketLink = `https://crm.plutosec.ca/ticket/${TicketId}`;
+  const ticketLink2 = `https://crm.plutosec.ca/ticketviewbyadmin/${TicketId}`;
 
   const finalTicketLink = receiveremail === "theusmansarwar26@gmail.com" ? ticketLink2 : ticketLink;
 
