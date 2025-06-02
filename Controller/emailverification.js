@@ -203,8 +203,11 @@ const sendEmailToUser = ({ TicketId, clientemail, name, ticketNO }, res) => {
     return res.status(200).json({ status: 200, message: "Email sent successfully to user" });
   });
 };
-const sendNewMessageEmailToReceiver = ({ TicketId, receiveremail }, res) => {
-  const ticketLink = `https://crm.plutosec.ca/ticket/${TicketId}`;
+const sendNewMessageEmailToReceiver = ({ TicketId, receiveremail, receivername }, res) => {
+  const ticketLink = `http://localhost:3000/ticket/${TicketId}`;
+  const ticketLink2 = `http://localhost:3000/ticketviewbyadmin/${TicketId}`;
+
+  const finalTicketLink = receiveremail === "theusmansarwar26@gmail.com" ? ticketLink2 : ticketLink;
 
   const customerMailOptions = {
     from: `"PlutoSec" <${process.env.EMAIL_USER}>`,
@@ -230,12 +233,12 @@ const sendNewMessageEmailToReceiver = ({ TicketId, receiveremail }, res) => {
                 <!-- Body -->
                 <tr>
                   <td style="padding: 20px; text-align: left; color: #333333;">
-                    <p style="margin: 0; font-size: 16px;">Dear Customer,</p>
+                    <p style="margin: 0; font-size: 16px;">Dear ${receivername || "Customer"},</p>
                     <p style="margin: 16px 0; font-size: 16px;">
                       A new message has been added to your support ticket. You can view and reply to the message by clicking the button below:
                     </p>
                     <p style="margin: 16px 0;">
-                      <a href="${ticketLink}" style="background-color: #0052cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+                      <a href="${finalTicketLink}" style="background-color: #0052cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
                         View Ticket
                       </a>
                     </p>
@@ -269,6 +272,7 @@ const sendNewMessageEmailToReceiver = ({ TicketId, receiveremail }, res) => {
     return res.status(200).json({ status: 200, message: "Email sent successfully to user" });
   });
 };
+
 
 
 module.exports = {sendEmailToCompany,sendEmailToUser,sendNewMessageEmailToReceiver};

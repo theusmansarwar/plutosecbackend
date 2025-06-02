@@ -9,6 +9,7 @@ const ChatsSchema = new mongoose.Schema(
     },
     senderemail: { type: String, required: true },
     receiveremail: { type: String, required: true },
+    receivername: { type: String, required: true },
     message: { type: String },
     file: { type: String },
     fileName: { type: String },

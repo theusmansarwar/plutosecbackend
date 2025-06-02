@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage});
 const addMessage = async (req, res) => {
   try {
-    const { TicketId, message, senderemail,receiveremail,fileName } = req.body;
+    const { TicketId, message, senderemail,receiveremail,fileName,receivername } = req.body;
     const file = req.file ? `/uploads/${req.file.filename}` : null;
     const missingFields = [];
 
@@ -30,6 +30,8 @@ const addMessage = async (req, res) => {
 
     if (!senderemail)
       missingFields.push({ name: "senderemail", message: "Sender email is required" });
+    if (!receivername)
+      missingFields.push({ name: "receivername", message: "receiver name is required" });
  if (!receiveremail)
       missingFields.push({ name: "receiveremail", message: "receiver email is required" });
 
@@ -49,6 +51,7 @@ const addMessage = async (req, res) => {
     const newMessage = await Chats.create({
       TicketId,
       senderemail,
+      receivername,
       receiveremail,
       file,
       fileName,
@@ -59,7 +62,7 @@ const addMessage = async (req, res) => {
     ticket.chats.push(newMessage._id);
 
     await ticket.save();
-sendNewMessageEmailToReceiver({TicketId, receiveremail  }, res);
+    sendNewMessageEmailToReceiver({TicketId, receiveremail,receivername  }, res);
     return res.status(201).json({
       status: 201,
       message: "Message added to ticket.",
