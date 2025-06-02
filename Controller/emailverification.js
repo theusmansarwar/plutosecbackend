@@ -203,12 +203,12 @@ const sendEmailToUser = ({ TicketId, clientemail, name, ticketNO }, res) => {
     return res.status(200).json({ status: 200, message: "Email sent successfully to user" });
   });
 };
-const sendNewMessageEmailToReceiver = ({ TicketId, receiverEmail }, res) => {
+const sendNewMessageEmailToReceiver = ({ TicketId, receiveremail }, res) => {
   const ticketLink = `https://crm.plutosec.ca/ticket/${TicketId}`;
 
   const customerMailOptions = {
     from: `"PlutoSec" <${process.env.EMAIL_USER}>`,
-    to: receiverEmail,
+    to: receiveremail,
     subject: `New Message on Your Support Ticket`,
     html: `
       <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
