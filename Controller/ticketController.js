@@ -79,7 +79,7 @@ const listtickets = async (req, res) => {
    
     const ticketslist = await Tickets.find()
       .select("-chats")
-      .sort({ publishedDate: -1 })
+      .sort({ createdAt: -1 })
       
 
     const totalTickets = await Tickets.countDocuments();
