@@ -57,7 +57,10 @@ const addMessage = async (req, res) => {
       fileName,
       message,
     });
+    ticket.status = senderemail === 'theusmansarwar26@gmail.com';
 
+    ticket.chats.push(newMessage._id);
+    await ticket.save();
     
     ticket.chats.push(newMessage._id);
 
