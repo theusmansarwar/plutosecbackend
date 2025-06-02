@@ -203,6 +203,72 @@ const sendEmailToUser = ({ TicketId, clientemail, name, ticketNO }, res) => {
     return res.status(200).json({ status: 200, message: "Email sent successfully to user" });
   });
 };
+const sendNewMessageEmailToReceiver = ({ TicketId, receiverEmail }, res) => {
+  const ticketLink = `https://crm.plutosec.ca/ticket/${TicketId}`;
+
+  const customerMailOptions = {
+    from: `"PlutoSec" <${process.env.EMAIL_USER}>`,
+    to: receiverEmail,
+    subject: `New Message on Your Support Ticket`,
+    html: `
+      <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+        <table cellpadding="0" cellspacing="0" border="0" 
+          style="width: 100%; background-color: #f4f4f4; padding: 20px; text-align: center;">
+          <tr>
+            <td>
+              <table cellpadding="0" cellspacing="0" border="0" 
+                style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; 
+                overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                
+                <!-- Header -->
+                <tr>
+                  <td style="background-color: #0052cc; padding: 20px; text-align: center;">
+                    <h1 style="color: #ffffff; margin: 0; font-size: 24px;">New Message on Your Support Ticket</h1>
+                  </td>
+                </tr>
+                
+                <!-- Body -->
+                <tr>
+                  <td style="padding: 20px; text-align: left; color: #333333;">
+                    <p style="margin: 0; font-size: 16px;">Dear Customer,</p>
+                    <p style="margin: 16px 0; font-size: 16px;">
+                      A new message has been added to your support ticket. You can view and reply to the message by clicking the button below:
+                    </p>
+                    <p style="margin: 16px 0;">
+                      <a href="${ticketLink}" style="background-color: #0052cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+                        View Ticket
+                      </a>
+                    </p>
+                    <p style="margin: 16px 0; font-size: 16px;">If you have further questions, feel free to respond directly through the ticket portal.</p>
+                    <p style="margin: 16px 0; font-size: 16px;">Best regards,<br><strong>PlutoSec Support Team</strong></p>
+                  </td>
+                </tr>
+                
+                <!-- Footer -->
+                <tr>
+                  <td style="background-color: #f4f4f4; padding: 10px; text-align: center; font-size: 14px; color: #777777;">
+                    <p style="margin: 0;">&copy; 2025 PlutoSec. All rights reserved.</p>
+                    <p style="margin: 0;">Visit us: <a href="https://plutosec.ca" style="color: #0052cc; text-decoration: none;">plutosec.ca</a></p>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    `,
+  };
+
+  transporter.sendMail(customerMailOptions, (error, info) => {
+    if (error) {
+      console.error("Error sending email to user:", error);
+      return res.status(500).json({ status: 500, message: "Error sending email to user" });
+    }
+
+    return res.status(200).json({ status: 200, message: "Email sent successfully to user" });
+  });
+};
 
 
-module.exports = {sendEmailToCompany,sendEmailToUser};
+module.exports = {sendEmailToCompany,sendEmailToUser,sendNewMessageEmailToReceiver};

@@ -3,13 +3,13 @@ const Tickets = require("../Models/ticketModel");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const { sendNewMessageEmailToReceiver } = require("./emailverification");
 
 const uploadDir = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Multer Storage Configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, uploadDir);
@@ -59,7 +59,7 @@ const addMessage = async (req, res) => {
     ticket.chats.push(newMessage._id);
 
     await ticket.save();
-
+sendNewMessageEmailToReceiver({TicketId, receiveremail  }, res);
     return res.status(201).json({
       status: 201,
       message: "Message added to ticket.",
