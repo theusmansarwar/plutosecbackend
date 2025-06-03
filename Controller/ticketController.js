@@ -80,7 +80,7 @@ const listtickets = async (req, res) => {
    
     const ticketslist = await Tickets.find()
       .select("-chats")
-      .sort({ updatedAt: -1 })
+        .sort({ status: 1, updatedAt: -1 });
       
 
     const totalTickets = await Tickets.countDocuments();
