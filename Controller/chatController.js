@@ -62,9 +62,6 @@ const addMessage = async (req, res) => {
     ticket.chats.push(newMessage._id);
     await ticket.save();
     
-    ticket.chats.push(newMessage._id);
-
-    await ticket.save();
     sendNewMessageEmailToReceiver({TicketId, receiveremail,receivername  }, res);
     return res.status(201).json({
       status: 201,
