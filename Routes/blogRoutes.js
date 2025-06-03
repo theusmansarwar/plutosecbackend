@@ -13,20 +13,19 @@ const {
     getblogSlugs,
     listblogWritter
 } = require("../Controller/blogController");
-const authMiddleware = require("../Middleware/authMiddleware");
 
 
 
-router.post('/create',authMiddleware, createblog);
-router.put('/update/:id',authMiddleware, updateblog);
-router.delete('/delete/:id',authMiddleware, deleteblog);
-router.delete('/deleteMultiple',authMiddleware, deletemultiblog);
+router.post('/create', createblog);
+router.put('/update/:id', updateblog);
+router.delete('/delete/:id', deleteblog);
+router.delete('/deleteMultiple', deletemultiblog);
 router.get('/view/:slug', viewblog);
-router.get('/viewbyid/:id',authMiddleware, viewblogbyid);
+router.get('/viewbyid/:id', viewblogbyid);
 router.get('/list', listblog);
 router.get('/sluglist', getblogSlugs);
-router.get('/adminlist',authMiddleware, listblogAdmin);
-router.get('/writerlist',authMiddleware, listblogWritter);
+router.get('/adminlist', listblogAdmin);
+router.get('/writerlist', listblogWritter);
 
 
 
