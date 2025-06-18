@@ -207,7 +207,7 @@ const sendNewMessageEmailToReceiver = ({ TicketId, receiveremail, receivername }
   const ticketLink = `https://crm.plutosec.ca/ticket/${TicketId}`;
   const ticketLink2 = `https://crm.plutosec.ca/ticketviewbyadmin/${TicketId}`;
 
-  const finalTicketLink = receiveremail === "theusmansarwar26@gmail.com" ? ticketLink2 : ticketLink;
+  const finalTicketLink = receiveremail === "contact@plutosec.ca" ? ticketLink2 : ticketLink;
 
   const customerMailOptions = {
     from: `"PlutoSec" <${process.env.EMAIL_USER}>`,
