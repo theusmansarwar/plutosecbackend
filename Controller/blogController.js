@@ -346,7 +346,7 @@ const getFeaturedblogsadmin = async (req, res) => {
     const page = parseInt(req.query.page) || 1; // Get page from query, default to 1
     const limit = parseInt(req.query.limit) || 10;
     const allFeaturedBlogs = await Blogs.find({
-      published: true,
+    
       featured: true,
     })
       .select("-comments -detail -viewedBy -featured")
@@ -354,7 +354,7 @@ const getFeaturedblogsadmin = async (req, res) => {
       .limit(limit)
       .skip((page - 1) * limit);
     const totalBlogs = await Blogs.countDocuments({
-      published: true,
+     
       featured: true,
     });
     res.status(200).json({
