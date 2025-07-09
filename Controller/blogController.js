@@ -349,7 +349,7 @@ const getFeaturedblogsadmin = async (req, res) => {
       published: true,
       featured: true,
     })
-      .select("-comments -detail -published -viewedBy -featured")
+      .select("-comments -detail -viewedBy -featured")
       .sort({ publishedDate: -1 })
       .limit(limit)
       .skip((page - 1) * limit);
