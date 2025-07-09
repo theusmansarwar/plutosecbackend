@@ -45,7 +45,7 @@ const createblog = async (req, res) => {
       published,
       publishedDate,
       faqSchema,
-      featured
+      featured,
     } = req.body;
 
     const thumbnail = req.file ? `/uploads/${req.file.filename}` : null;
@@ -91,13 +91,11 @@ const createblog = async (req, res) => {
         });
 
       if (missingFields.length > 0) {
-        return res
-          .status(400)
-          .json({
-            status: 400,
-            message: "Some fields are missing!",
-            missingFields,
-          });
+        return res.status(400).json({
+          status: 400,
+          message: "Some fields are missing!",
+          missingFields,
+        });
       }
 
       const [existingTitle, existingSlug] = await Promise.all([
@@ -135,22 +133,18 @@ const createblog = async (req, res) => {
       faqSchema,
     });
 
-    res
-      .status(201)
-      .json({
-        status: 201,
-        message: "Blog created successfully",
-        blog: newBlog,
-      });
+    res.status(201).json({
+      status: 201,
+      message: "Blog created successfully",
+      blog: newBlog,
+    });
   } catch (error) {
     console.error("Error creating blog:", error);
-    res
-      .status(500)
-      .json({
-        status: 500,
-        message: "Internal server error",
-        error: error.message,
-      });
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };
 
@@ -169,7 +163,7 @@ const updateblog = async (req, res) => {
       category,
       publishedDate,
       faqSchema,
-      featured
+      featured,
     } = req.body;
 
     const thumbnail = req.file ? `/uploads/${req.file.filename}` : null;
@@ -214,13 +208,11 @@ const updateblog = async (req, res) => {
       .json({ status: 200, message: "Blog updated successfully", blog });
   } catch (error) {
     console.error("Error updating blog:", error);
-    res
-      .status(500)
-      .json({
-        status: 500,
-        message: "Internal server error",
-        error: error.message,
-      });
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };
 
@@ -236,7 +228,7 @@ const deleteblog = async (req, res) => {
     if (blog.thumbnail) {
       const filePath = path.join(__dirname, "..", blog.thumbnail);
       if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath); 
+        fs.unlinkSync(filePath);
       }
     }
 
@@ -339,6 +331,38 @@ const getFeaturedblogs = async (req, res) => {
 
     res.status(200).json({
       blogs: blogslist,
+    });
+  } catch (error) {
+    console.error("Error fetching blogs:", error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+const getFeaturedblogsadmin = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Get page from query, default to 1
+    const limit = parseInt(req.query.limit) || 10;
+    const allFeaturedBlogs = await Blogs.find({
+      published: true,
+      featured: true,
+    })
+      .select("-comments -detail -published -viewedBy -featured")
+      .sort({ publishedDate: -1 })
+      .limit(limit)
+      .skip((page - 1) * limit);
+    const totalBlogs = await Blogs.countDocuments({
+      published: true,
+      featured: true,
+    });
+    res.status(200).json({
+      blogs: allFeaturedBlogs,
+      currentPage: page,
+      limit: limit,
+      totalBlogs,
+      totalPages: Math.ceil(totalBlogs / limit),
     });
   } catch (error) {
     console.error("Error fetching blogs:", error);
@@ -518,4 +542,5 @@ module.exports = {
   viewblogbyid,
   getblogSlugs,
   getFeaturedblogs,
+  getFeaturedblogsadmin
 };
