@@ -1,16 +1,23 @@
 const express = require("express");
-const router = express.Router();
-
 const {
   CreateTicket,
   GetTicketById,
   listtickets
- 
 } = require("../Controller/ticketController");
 const authMiddleware = require("../Middleware/authMiddleware");
 
-router.post("/add",authMiddleware, CreateTicket);
-router.get("/view/:id", GetTicketById);
-router.get("/list", listtickets);
+module.exports = (io) => {
+  const router = express.Router();
 
-module.exports = router;
+  // Attach Socket.IO to every request on this router
+  // router.use((req, res, next) => {
+  //   req.io = io;
+  //   next();
+  // });
+
+  router.post("/add", authMiddleware, CreateTicket);
+  router.get("/view/:id", GetTicketById);
+  router.get("/list", listtickets);
+
+  return router;
+};
