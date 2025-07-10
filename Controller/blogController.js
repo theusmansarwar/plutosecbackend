@@ -514,6 +514,23 @@ const getblogSlugs = async (req, res) => {
   }
 };
 
+const changeblogauther = async (req, res) => {
+  try {
+    const result = await Blogs.updateMany({}, { $set: { author: "Admin" } });
+
+    res.status(200).json({
+      status: 200,
+      message: `${result.modifiedCount} blog authors updated to 'Admin'.`,
+    });
+  } catch (error) {
+    console.error("Error updating blog authors:", error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
 module.exports = {
   createblog: [upload.single("thumbnail"), createblog],
   updateblog: [upload.single("thumbnail"), updateblog],
@@ -526,5 +543,6 @@ module.exports = {
   viewblogbyid,
   getblogSlugs,
   getFeaturedblogs,
-  getFeaturedblogsadmin
+  getFeaturedblogsadmin,
+  changeblogauther
 };

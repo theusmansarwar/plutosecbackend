@@ -18,7 +18,7 @@ const BlogsSchema = new mongoose.Schema(
     views: { type: Number, default: 0 },
     published: { type: Boolean, default: false },
     featured: { type: Boolean, default: false },
-    publishedDate: { type: String,  },
+    
     viewedBy: [{ type: String }],
 
     

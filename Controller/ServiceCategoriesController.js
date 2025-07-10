@@ -1,5 +1,4 @@
 const ServiceCategory = require("../Models/servicesCategoriesModel");
-const Blogs = require("../Models/blogModel");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs"); // ✅ Required for blog-ServiceCategory relation
@@ -70,62 +69,65 @@ const updateServiceCategory = async (req, res) => {
   try {
     const { id } = req.params;
     let { name, published } = req.body;
+    const category = await ServiceCategory.findById(id);
+
+    if (!category) {
+      return res.status(404).json({ message: "ServiceCategory not found" });
+    }
 
     if (!name) {
-      return res
-        .status(400)
-        .json({ message: "ServiceCategory name is required" });
+      return res.status(400).json({ message: "ServiceCategory name is required" });
     }
 
-    name = name.trim(); // ✅ Trim whitespace
+    name = name.trim();
 
-    const existingServiceCategory = await ServiceCategory.findOne({
+    const existing = await ServiceCategory.findOne({
       name: new RegExp(`^${name}$`, "i"),
+      _id: { $ne: id },
     });
-    if (
-      existingServiceCategory &&
-      existingServiceCategory._id.toString() !== id
-    ) {
-      return res
-        .status(400)
-        .json({ message: "ServiceCategory name already exists" });
+
+    if (existing) {
+      return res.status(400).json({ message: "ServiceCategory name already exists" });
     }
 
-    const ServiceCategory = await ServiceCategory.findByIdAndUpdate(
-      id,
-      { name, published },
-      { new: true, runValidators: true }
-    );
+    // Handle new thumbnail
+    if (req.file) {
+      const newThumbnail = `/uploads/${req.file.filename}`;
+      if (category.thumbnail) {
+        const oldPath = path.join(__dirname, "..", category.thumbnail);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+      category.thumbnail = newThumbnail;
+    }
 
-    if (!ServiceCategory)
-      return res.status(404).json({ message: "ServiceCategory not found" });
+    category.name = name;
+    category.published = published;
+    await category.save();
 
-    res
-      .status(200)
-      .json({
-        status: 200,
-        message: "ServiceCategory updated successfully",
-        ServiceCategory,
-      });
+    res.status(200).json({
+      status: 200,
+      message: "ServiceCategory updated successfully",
+      ServiceCategory: category,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// ✅ Delete ServiceCategory (Show List of Related Blogs)
+// ✅ Delete ServiceCategory (Show List of Related ServiceCategory)
 const deleteServiceCategory = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // ✅ Find all blogs linked to this ServiceCategory
-    const existingBlogs = await Blogs.find({ ServiceCategory: id }).select(
+    // ✅ Find all ServiceCategory linked to this ServiceCategory
+    const existingServiceCategory = await ServiceCategory.find({ ServiceCategory: id }).select(
       "title _id slug"
     );
 
-    if (existingBlogs.length > 0) {
+    if (existingServiceCategory.length > 0) {
       return res.status(400).json({
-        message: "Cannot delete ServiceCategory. It is linked to blogs.",
-        blogs: existingBlogs, // ✅ Return list of linked blogs (ID + Title)
+        message: "Cannot delete ServiceCategory. It is linked to ServiceCategory.",
+        ServiceCategory: existingServiceCategory, // ✅ Return list of linked ServiceCategory (ID + Title)
       });
     }
 
@@ -147,20 +149,20 @@ const deleteAllCategories = async (req, res) => {
         .status(400)
         .json({ message: "Invalid request. Provide ServiceCategory IDs." });
     }
-    const linkedBlogs = await Blogs.find({
+    const linkedServiceCategory = await ServiceCategory.find({
       ServiceCategory: { $in: ids },
     }).select("title _id ServiceCategory");
-    const categoriesWithBlogs = [
-      ...new Set(linkedBlogs.map((blog) => blog.ServiceCategory.toString())),
+    const categoriesWithServiceCategory = [
+      ...new Set(linkedServiceCategory.map((blog) => blog.ServiceCategory.toString())),
     ];
     const categoriesToDelete = ids.filter(
-      (id) => !categoriesWithBlogs.includes(id)
+      (id) => !categoriesWithServiceCategory.includes(id)
     );
 
     if (categoriesToDelete.length === 0) {
       return res.status(400).json({
-        message: "Cannot delete categories. All are linked to blogs.",
-        linkedBlogs,
+        message: "Cannot delete categories. All are linked to ServiceCategory.",
+        linkedServiceCategory,
       });
     }
 
@@ -170,8 +172,8 @@ const deleteAllCategories = async (req, res) => {
       status: 200,
       message: "Categories Delete successfully.",
       deletedCategories: categoriesToDelete,
-      failedToDelete: categoriesWithBlogs,
-      linkedBlogs,
+      failedToDelete: categoriesWithServiceCategory,
+      linkedServiceCategory,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
