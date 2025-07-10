@@ -38,12 +38,12 @@ const createblog = async (req, res) => {
       description,
       detail,
       author,
-      tags,
+     
       metaDescription,
       slug,
       category,
       published,
-      publishedDate,
+   
       faqSchema,
       featured,
     } = req.body;
@@ -65,8 +65,6 @@ const createblog = async (req, res) => {
         missingFields.push({ name: "detail", message: "Detail is required" });
       if (!author)
         missingFields.push({ name: "author", message: "Author is required" });
-      if (!tags)
-        missingFields.push({ name: "tags", message: "Tags are required" });
       if (!metaDescription)
         missingFields.push({
           name: "metaDescription",
@@ -84,12 +82,7 @@ const createblog = async (req, res) => {
           name: "category",
           message: "Category is required",
         });
-      if (!publishedDate)
-        missingFields.push({
-          name: "publishedDate",
-          message: "Published Date is required",
-        });
-
+      
       if (missingFields.length > 0) {
         return res.status(400).json({
           status: 400,
@@ -108,11 +101,6 @@ const createblog = async (req, res) => {
         return res.status(400).json({ message: "Blog Slug already exists" });
     }
 
-    const tagsArray = Array.isArray(tags)
-      ? tags
-      : tags
-      ? tags.split(",").map((tag) => tag.trim())
-      : [];
     const categoryExists = await Category.findById(category);
     if (!categoryExists)
       return res.status(400).json({ message: "Invalid category ID" });
@@ -124,11 +112,11 @@ const createblog = async (req, res) => {
       author,
       slug,
       thumbnail,
-      tags: tagsArray,
+ 
       metaDescription,
       published: isPublished,
       featured: isFeatured,
-      publishedDate,
+
       category: { _id: categoryExists._id, name: categoryExists.name },
       faqSchema,
     });
@@ -157,11 +145,11 @@ const updateblog = async (req, res) => {
       detail,
       author,
       slug,
-      tags,
+   
       metaDescription,
       published,
       category,
-      publishedDate,
+ 
       faqSchema,
       featured,
     } = req.body;
@@ -184,14 +172,10 @@ const updateblog = async (req, res) => {
     blog.detail = detail || blog.detail;
     blog.author = author || blog.author;
     blog.slug = slug || blog.slug;
-    blog.tags =
-      typeof tags === "string"
-        ? tags.split(",").map((tag) => tag.trim())
-        : tags || blog.tags;
     blog.metaDescription = metaDescription || blog.metaDescription;
     blog.published = isPublished;
     blog.featured = isFeatured;
-    blog.publishedDate = publishedDate;
+
     blog.faqSchema = faqSchema;
 
     if (thumbnail) {
@@ -350,7 +334,7 @@ const getFeaturedblogsadmin = async (req, res) => {
       featured: true,
     })
       .select("-comments -detail -viewedBy -featured")
-      .sort({ publishedDate: -1 })
+      .sort({ createdAt: -1 })
       .limit(limit)
       .skip((page - 1) * limit);
     const totalBlogs = await Blogs.countDocuments({
