@@ -49,8 +49,8 @@ const addServiceCategory = async (req, res) => {
         .json({ message: "ServiceCategory already exists" });
     }
 
-    const ServiceCategory = new ServiceCategory({ name, published, thumbnail });
-    await ServiceCategory.save();
+    const Service_Category = new ServiceCategory({ name, published, thumbnail });
+    await Service_Category.save();
 
     res
       .status(201)
