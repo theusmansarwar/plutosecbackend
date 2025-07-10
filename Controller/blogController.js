@@ -296,7 +296,7 @@ const listblog = async (req, res) => {
 
     const blogslist = await Blogs.find({ published: true })
       .select("-comments -detail -published -viewedBy")
-      .sort({ publishedDate: -1 })
+      .sort({ createdAt: -1 })
       .limit(limit)
       .skip((page - 1) * limit);
 
@@ -380,7 +380,7 @@ const listblogAdmin = async (req, res) => {
 
     const blogslist = await Blogs.find()
       .select("-comments -detail -viewedBy ")
-      .sort({ publishedDate: -1 })
+      .sort({ createdAt: -1 })
       .populate({
         path: "category",
         model: "Category", // Explicitly specifying model
@@ -419,7 +419,7 @@ const listblogWritter = async (req, res) => {
 
     const blogslist = await Blogs.find(filter)
       .select("-comments -detail -viewedBy")
-      .sort({ publishedDate: -1 })
+      .sort({ createdAt: -1 })
       .populate({
         path: "category",
         model: "Category",
