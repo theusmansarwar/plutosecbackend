@@ -185,6 +185,31 @@ const listserviceAdmin = async (req, res) => {
     });
   }
 };
+
+const getServiceById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const service = await Services.findById(id)
+      .populate("category", "name ")
+      .populate("offerings", "name  published")  
+      .populate("successstories", "name published")
+      .exec();
+
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" });
+    }
+
+    res.status(200).json({
+      status: 200,
+      message: "Service fetched successfully",
+      service,
+    });
+  } catch (error) {
+    console.error("Error fetching service by ID:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
 module.exports = {
-  createservice,updateService,listserviceAdmin
+  createservice,updateService,listserviceAdmin,getServiceById
 };
