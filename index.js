@@ -163,12 +163,18 @@ const applicationRoutes = require("./Routes/applicationRoutes");
 const newsletterRoutes= require("./Routes/newsletterRoutes")
 const ticketsRoutes= require("./Routes/ticketRoutes")
 const chatsRoutes= require("./Routes/chatsRoutes")
+const serviceRouter= require("./Routes/serviceRoutes")
+const offerings= require("./Routes/offeringRoutes")
+const successstories= require("./Routes/successStoriesRoutes")
 app.use("/", userRouter);
 app.use("/admin", adminRoutes);
 app.use("/blog", blogRouter);
 app.use("/comment", commentRouter);
 app.use("/category", categoryRouter);
 app.use("/servicecategory", servicecategoryRouter);
+app.use("/service", serviceRouter);
+app.use("/offering", offerings);
+app.use("/successstories", successstories);
 app.use("/usertype", UsertypeRouter);
 app.use("/testimonial", testimonialRouter);
 app.use("/views", viewsRouter);
