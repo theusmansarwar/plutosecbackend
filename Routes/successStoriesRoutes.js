@@ -10,7 +10,7 @@ const {
 } = require("../Controller/successstoriesController");
 
 const authMiddleware = require("../Middleware/authMiddleware");
-router.post("/add", authMiddleware, addSuccessStories);
+router.post("/add", addSuccessStories);
 router.put("/update/:id", authMiddleware, updateSuccessStories);
 router.delete("delete/:id", authMiddleware, deleteSuccessStories);
 router.post("/delete-many", authMiddleware, deleteAllSuccessStories);

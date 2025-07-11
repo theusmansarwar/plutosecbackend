@@ -33,7 +33,7 @@ const addSuccessStories = async (req, res) => {
     // ✅ Add to corresponding Service
     const updatedService = await Services.findByIdAndUpdate(
       serviceid,
-      { $push: { SuccessStories: SuccessStoriesSaved._id } },
+      { $push: { successstories: SuccessStoriesSaved._id } },
       { new: true }
     );
 
