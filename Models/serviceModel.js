@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const ServiceSchema = new mongoose.Schema(
   {
     title: { type: String },
-    category: {_id: { type: mongoose.Schema.Types.ObjectId, ref: "ServiceCategory" }},
+category: { type: mongoose.Schema.Types.ObjectId, ref: "ServiceCategory" },
+
     description: { type: String },
     metaDescription: { type: String, maxlength: 160, trim: true },
     slug: { type: String },

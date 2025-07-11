@@ -155,6 +155,36 @@ const updateService = async (req, res) => {
     });
   }
 };
+const listserviceAdmin = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; 
+    const limit = parseInt(req.query.limit) || 10; 
+
+    const servicelist = await Services.find()
+      .select("-offerings -description -metaDescription -cta -successstories ")
+      .sort({ createdAt: -1 })
+     .populate("category", "name published thumbnail")
+      .limit(limit)
+      .skip((page - 1) * limit);
+
+    const totalservices = await Services.countDocuments();
+
+    res.status(200).json({
+      totalservices,
+      totalPages: Math.ceil(totalservices / limit),
+      currentPage: page,
+      limit: limit,
+      servicelist: servicelist,
+    });
+  } catch (error) {
+    console.error("Error fetching services:", error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
 module.exports = {
-  createservice,updateService
+  createservice,updateService,listserviceAdmin
 };
