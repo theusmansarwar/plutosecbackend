@@ -6,7 +6,7 @@ const addSuccessStories = async (req, res) => {
     let { name, published, items, serviceid } = req.body;
 
     if (!name) {
-      return res.status(400).json({ message: "SuccessStories name is required" });
+      return res.status(400).json({ message: "Success story name is required" });
     }
     if (!serviceid) {
       return res.status(400).json({ message: "Service ID is required" });
@@ -43,8 +43,8 @@ const addSuccessStories = async (req, res) => {
 
     res.status(201).json({
       status: 201,
-      message: "SuccessStories added and linked to service successfully",
-      SuccessStories: SuccessStoriesSaved,
+      message: "SuccessStoriesSaved added and linked to service successfully",
+      SuccessStoriesSaved: SuccessStoriesSaved,
       linkedService: updatedService._id,
     });
   } catch (error) {

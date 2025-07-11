@@ -192,8 +192,8 @@ const getServiceById = async (req, res) => {
 
     const service = await Services.findById(id)
       .populate("category", "name ")
-      .populate("offerings", "name  published")  
-      .populate("successstories", "name published")
+      .populate("offerings", "name  published items")  
+      .populate("successstories", "name published items")
       .exec();
 
     if (!service) {
