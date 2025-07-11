@@ -1,44 +1,57 @@
 const SuccessStories = require("../Models/successstoriesModel");
-
+const Services = require("../Models/serviceModel");
 
 const addSuccessStories = async (req, res) => {
   try {
-    let { name, published, items } = req.body;
+    let { name, published, items, serviceid } = req.body;
 
     if (!name) {
       return res.status(400).json({ message: "SuccessStories name is required" });
     }
+    if (!serviceid) {
+      return res.status(400).json({ message: "Service ID is required" });
+    }
 
     name = name.trim();
-    const existingSuccessStory = await SuccessStories.findOne({ name: new RegExp(`^${name}$`, "i") });
-
-    if (existingSuccessStory) {
-      return res.status(400).json({ message: "SuccessStory already exists" });
+    const existingSuccessStories = await SuccessStories.findOne({ name: new RegExp(`^${name}$`, "i") });
+    if (existingSuccessStories) {
+      return res.status(400).json({ message: "SuccessStories already exists" });
     }
 
     if (!Array.isArray(items)) {
       items = [];
     }
 
-    const newSuccessStory = new SuccessStories({
+    const newSuccessStories = new SuccessStories({
       name,
-      published: published === true || published === "true", // handle boolean as string too
+      published: published === true || published === "true",
       items,
     });
 
-    await newSuccessStory.save();
+    const SuccessStoriesSaved = await newSuccessStories.save();
+
+    // ✅ Add to corresponding Service
+    const updatedService = await Services.findByIdAndUpdate(
+      serviceid,
+      { $push: { SuccessStories: SuccessStoriesSaved._id } },
+      { new: true }
+    );
+
+    if (!updatedService) {
+      return res.status(404).json({ message: "Service not found to link offering" });
+    }
 
     res.status(201).json({
       status: 201,
-      message: "SuccessStory added successfully",
-      successStory: newSuccessStory,
+      message: "SuccessStories added and linked to service successfully",
+      SuccessStories: SuccessStoriesSaved,
+      linkedService: updatedService._id,
     });
   } catch (error) {
-    console.error("Error adding success story:", error);
+    console.error("Error adding offering:", error);
     res.status(500).json({ error: error.message });
   }
 };
-
 
 const updateSuccessStories = async (req, res) => {
   try {

@@ -2,19 +2,19 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  addOffering,
-  updateOffering,
-  deleteOffering,
-  deleteAllOffering,
-  getSuccessStoryById,
+  addOfferings,
+  updateOfferings,
+  deleteOfferings,
+  deleteAllOfferings,
+  getOfferingsById,
 } = require("../Controller/offeringController");
 
 const authMiddleware = require("../Middleware/authMiddleware");
-router.post("/add", authMiddleware, addOffering);
-router.put("/update/:id", authMiddleware, updateOffering);
-router.delete("delete/:id", authMiddleware, deleteOffering);
-router.post("/delete-many", authMiddleware, deleteAllOffering);
-router.get("/:id", authMiddleware, getSuccessStoryById);
+router.post("/add", authMiddleware, addOfferings);
+router.put("/update/:id", authMiddleware, updateOfferings);
+router.delete("delete/:id", authMiddleware, deleteOfferings);
+router.post("/delete-many", authMiddleware, deleteAllOfferings);
+router.get("/:id", authMiddleware, getOfferingsById);
 
 
 

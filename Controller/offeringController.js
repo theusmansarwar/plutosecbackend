@@ -1,59 +1,74 @@
-const Offering = require("../Models/OfferingModel");
+const Offerings = require("../Models/offeringModel");
 
+const Services = require("../Models/serviceModel");
 
-const addOffering = async (req, res) => {
+const addOfferings = async (req, res) => {
   try {
-    let { name, published, items } = req.body;
+    let { name, published, items, serviceid } = req.body;
 
     if (!name) {
-      return res.status(400).json({ message: "Offering name is required" });
+      return res.status(400).json({ message: "Offerings name is required" });
+    }
+    if (!serviceid) {
+      return res.status(400).json({ message: "Service ID is required" });
     }
 
     name = name.trim();
-    const existingSuccessStory = await Offering.findOne({ name: new RegExp(`^${name}$`, "i") });
-
-    if (existingSuccessStory) {
-      return res.status(400).json({ message: "SuccessStory already exists" });
+    const existingOfferings = await Offerings.findOne({ name: new RegExp(`^${name}$`, "i") });
+    if (existingOfferings) {
+      return res.status(400).json({ message: "Offerings already exists" });
     }
 
     if (!Array.isArray(items)) {
       items = [];
     }
 
-    const newSuccessStory = new Offering({
+    const newOfferings = new Offerings({
       name,
-      published: published === true || published === "true", // handle boolean as string too
+      published: published === true || published === "true",
       items,
     });
 
-    await newSuccessStory.save();
+    const offeringsSaved = await newOfferings.save();
+
+    // ✅ Add to corresponding Service
+    const updatedService = await Services.findByIdAndUpdate(
+      serviceid,
+      { $push: { offerings: offeringsSaved._id } },
+      { new: true }
+    );
+
+    if (!updatedService) {
+      return res.status(404).json({ message: "Service not found to link offering" });
+    }
 
     res.status(201).json({
       status: 201,
-      message: "SuccessStory added successfully",
-      successStory: newSuccessStory,
+      message: "Offerings added and linked to service successfully",
+      offerings: offeringsSaved,
+      linkedService: updatedService._id,
     });
   } catch (error) {
-    console.error("Error adding success story:", error);
+    console.error("Error adding offering:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
 
-const updateOffering = async (req, res) => {
+const updateOfferings = async (req, res) => {
   try {
     const { id } = req.params;
     let { name, published, items } = req.body;
 
     if (!name) {
-      return res.status(400).json({ message: "SuccessStory name is required" });
+      return res.status(400).json({ message: "Offerings name is required" });
     }
 
     name = name.trim();
 
-    const existing = await Offering.findOne({ name: new RegExp(`^${name}$`, "i") });
+    const existing = await Offerings.findOne({ name: new RegExp(`^${name}$`, "i") });
     if (existing && existing._id.toString() !== id) {
-      return res.status(400).json({ message: "SuccessStory name already exists" });
+      return res.status(400).json({ message: "Offerings name already exists" });
     }
 
  
@@ -61,20 +76,20 @@ const updateOffering = async (req, res) => {
       items = [];
     }
 
-    const updatedStory = await Offering.findByIdAndUpdate(
+    const updatedStory = await Offerings.findByIdAndUpdate(
       id,
       { name, published: published === true || published === "true", items },
       { new: true, runValidators: true }
     );
 
     if (!updatedStory) {
-      return res.status(404).json({ message: "SuccessStory not found" });
+      return res.status(404).json({ message: "Offerings not found" });
     }
 
     res.status(200).json({
       status: 200,
-      message: "SuccessStory updated successfully",
-      successStory: updatedStory,
+      message: "Offerings updated successfully",
+      Offerings: updatedStory,
     });
   } catch (error) {
     console.error("Error updating success story:", error);
@@ -83,37 +98,37 @@ const updateOffering = async (req, res) => {
 };
 
 
-// ✅ Delete Offering (Show List of Related Blogs)
-const deleteOffering = async (req, res) => {
+// ✅ Delete Offerings (Show List of Related Blogs)
+const deleteOfferings = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const deletedStory = await Offering.findByIdAndDelete(id);
+    const deletedStory = await Offerings.findByIdAndDelete(id);
     if (!deletedStory) {
-      return res.status(404).json({ message: "SuccessStory not found" });
+      return res.status(404).json({ message: "Offerings not found" });
     }
 
     res.status(200).json({
       status: 200,
-      message: "SuccessStory deleted successfully",
+      message: "Offerings deleted successfully",
       deletedId: id,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-};const deleteAllOffering = async (req, res) => {
+};const deleteAllOfferings = async (req, res) => {
   try {
     const { ids } = req.body;
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).json({ message: "Invalid request. Provide SuccessStory IDs." });
+      return res.status(400).json({ message: "Invalid request. Provide Offerings IDs." });
     }
 
-    const result = await Offering.deleteMany({ _id: { $in: ids } });
+    const result = await Offerings.deleteMany({ _id: { $in: ids } });
 
     res.status(200).json({
       status: 200,
-      message: "Offering deleted successfully",
+      message: "Offerings deleted successfully",
       deletedCount: result.deletedCount,
       deletedIds: ids,
     });
@@ -122,20 +137,20 @@ const deleteOffering = async (req, res) => {
   }};
 
   
- const getSuccessStoryById = async (req, res) => {
+ const getOfferingsById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const successStory = await Offering.findById(id);
+    const Offerings = await Offerings.findById(id);
 
-    if (!successStory) {
-      return res.status(404).json({ message: "SuccessStory not found" });
+    if (!Offerings) {
+      return res.status(404).json({ message: "Offerings not found" });
     }
 
     res.status(200).json({
       status: 200,
-      message: "SuccessStory retrieved successfully",
-      successStory,
+      message: "Offerings retrieved successfully",
+      Offerings,
     });
   } catch (error) {
     console.error("Error fetching success story:", error);
@@ -143,4 +158,4 @@ const deleteOffering = async (req, res) => {
   }
 };
 
-module.exports = { addOffering, updateOffering, deleteOffering,deleteAllOffering, getSuccessStoryById };
+module.exports = { addOfferings, updateOfferings, deleteOfferings,deleteAllOfferings, getOfferingsById };
