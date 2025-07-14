@@ -106,7 +106,7 @@ const updateService = async (req, res) => {
         });
       }
 
-      // Check for existing title/slug (excluding current service)
+      
       const [existingTitle, existingSlug] = await Promise.all([
         Services.findOne({ title, _id: { $ne: id } }),
         Services.findOne({ slug, _id: { $ne: id } }),

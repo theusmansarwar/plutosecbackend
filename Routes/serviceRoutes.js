@@ -11,7 +11,7 @@ const {
 const authMiddleware = require("../Middleware/authMiddleware");
 
 router.post("/create", createservice);
-router.post("/update/:id", updateService);
+router.put("/update/:id", updateService);
 router.get("/get/:id", getServiceById);
 router.get("/listbyadmin", listserviceAdmin);
 module.exports = router;
