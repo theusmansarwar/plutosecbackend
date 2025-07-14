@@ -69,7 +69,8 @@ const addServiceCategory = async (req, res) => {
 const updateServiceCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    let { name, published } = req.body;
+        let { name, published } = req.body;
+    const thumbnail = req.file ? `/uploads/${req.file.filename}` : null;
     const category = await ServiceCategory.findById(id);
 
     if (!category) {
@@ -92,14 +93,13 @@ const updateServiceCategory = async (req, res) => {
     }
 
     // Handle new thumbnail
-    if (req.file) {
-      const newThumbnail = `/uploads/${req.file.filename}`;
-      if (category.thumbnail) {
-        const oldPath = path.join(__dirname, "..", category.thumbnail);
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-      }
-      category.thumbnail = newThumbnail;
-    }
+    if (thumbnail) {
+          if (existing.thumbnail) {
+            const oldPath = path.join(__dirname, "..", existing.thumbnail);
+            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+          }
+          existing.thumbnail = thumbnail;
+        }
 
     category.name = name;
     category.published = published;
