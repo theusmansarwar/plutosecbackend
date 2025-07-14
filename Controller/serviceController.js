@@ -211,6 +211,31 @@ const getServiceById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+const getServiceBySlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    const service = await Services.findOne({ slug: slug, published: true })
+      .populate("category", "name")
+      .populate("offerings", "name published items")
+      .populate("successstories", "name published items")
+      .exec();
+
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" });
+    }
+
+    res.status(200).json({
+      status: 200,
+      message: "Service fetched successfully",
+      service,
+    });
+  } catch (error) {
+    console.error("Error fetching service by slug:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 const deleteAllservices = async (req, res) => {
   try {
@@ -238,5 +263,5 @@ const deleteAllservices = async (req, res) => {
   }
 };
 module.exports = {
-  createservice,updateService,listserviceAdmin,getServiceById,deleteAllservices
+  createservice,updateService,listserviceAdmin,getServiceById,deleteAllservices,getServiceBySlug
 };

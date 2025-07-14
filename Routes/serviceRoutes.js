@@ -7,6 +7,7 @@ const {
   listserviceAdmin,
   getServiceById,
   deleteAllservices,
+  getServiceBySlug,
  
 } = require("../Controller/serviceController");
 const authMiddleware = require("../Middleware/authMiddleware");
@@ -16,4 +17,5 @@ router.put("/update/:id", updateService);
 router.get("/get/:id", getServiceById);
 router.get("/listbyadmin", listserviceAdmin);
 router.delete("/delete-many", deleteAllservices);
+router.get('/view/:slug', getServiceBySlug);
 module.exports = router;
