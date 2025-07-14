@@ -10,7 +10,7 @@ const {
 } = require("../Controller/offeringController");
 
 const authMiddleware = require("../Middleware/authMiddleware");
-router.post("/add", authMiddleware, addOfferings);
+router.post("/add", addOfferings);
 router.put("/update/:id", authMiddleware, updateOfferings);
 router.delete("delete/:id", authMiddleware, deleteOfferings);
 router.delete("/delete-many", authMiddleware, deleteAllOfferings);

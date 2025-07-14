@@ -1,7 +1,8 @@
 const ServiceCategory = require("../Models/servicesCategoriesModel");
+const Services = require("../Models/serviceModel");
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs"); // ✅ Required for blog-ServiceCategory relation
+const fs = require("fs"); 
 const uploadDir = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -219,6 +220,43 @@ const liveServiceCategory = async (req, res) => {
   }
 };
 
+
+
+
+const getGroupedServices = async (req, res) => {
+  try {
+    const categories = await ServiceCategory.find({ published: true });
+
+
+    const servicesGrouped = [];
+    for (const category of categories) {
+      const services = await Services.find({
+        category: category._id,
+        published: true,
+      }).select("title slug");
+
+      const formattedServices = services.map((service) => ({
+        title: service.title,
+        slug: service.slug,
+      }));
+
+      servicesGrouped.push({
+        heading: category.name,
+        icon: category.thumbnail,
+        data: formattedServices,
+      });
+    }
+
+    res.status(200).json({ success: true, services: servicesGrouped });
+  } catch (err) {
+    console.error("Error fetching grouped services:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
+
+
 module.exports = {
   addServiceCategory: [upload.single("thumbnail"), addServiceCategory],
   updateServiceCategory: [upload.single("thumbnail"), updateServiceCategory],
@@ -226,4 +264,5 @@ module.exports = {
   viewServiceCategory,
   liveServiceCategory,
   deleteAllCategories,
+  getGroupedServices
 };

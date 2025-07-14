@@ -8,6 +8,7 @@ const {
   viewServiceCategory,
   liveServiceCategory,
   deleteAllCategories,
+  getGroupedServices,
 } = require("../Controller/ServiceCategoriesController");
 const authMiddleware = require("../Middleware/authMiddleware");
 
@@ -17,5 +18,6 @@ router.delete("/delete/:id", authMiddleware, deleteServiceCategory);
 router.delete("/delete", authMiddleware, deleteAllCategories);
 router.get("/view", authMiddleware, viewServiceCategory);
 router.get("/live", liveServiceCategory);
+router.get("/all", getGroupedServices);
 
 module.exports = router;

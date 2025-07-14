@@ -5,6 +5,7 @@ const ServiceCategorySchema = new mongoose.Schema(
     name: { type: String, required: true },
     published: { type: Boolean, default: false },
     thumbnail: { type: String, required: true },
+  
   },
   { timestamps: true }
 );
