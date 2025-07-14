@@ -13,7 +13,7 @@ const authMiddleware = require("../Middleware/authMiddleware");
 router.post("/add", authMiddleware, addOfferings);
 router.put("/update/:id", authMiddleware, updateOfferings);
 router.delete("delete/:id", authMiddleware, deleteOfferings);
-router.post("/delete-many", authMiddleware, deleteAllOfferings);
+router.delete("/delete-many", authMiddleware, deleteAllOfferings);
 router.get("/:id", authMiddleware, getOfferingsById);
 
 
