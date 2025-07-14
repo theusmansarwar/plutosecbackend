@@ -69,15 +69,16 @@ const addServiceCategory = async (req, res) => {
 const updateServiceCategory = async (req, res) => {
   try {
     const { id } = req.params;
-        let { name, published } = req.body;
+    let { name, published } = req.body;
     const thumbnail = req.file ? `/uploads/${req.file.filename}` : null;
+
     const category = await ServiceCategory.findById(id);
 
     if (!category) {
       return res.status(404).json({ message: "ServiceCategory not found" });
     }
 
-    if (!name) {
+    if (!name || !name.trim()) {
       return res.status(400).json({ message: "ServiceCategory name is required" });
     }
 
@@ -85,21 +86,21 @@ const updateServiceCategory = async (req, res) => {
 
     const existing = await ServiceCategory.findOne({
       name: new RegExp(`^${name}$`, "i"),
-      _id: { $ne: id },
+      _id: { $ne: id }, // exclude current
     });
 
     if (existing) {
       return res.status(400).json({ message: "ServiceCategory name already exists" });
     }
 
-    // Handle new thumbnail
+    // Handle thumbnail replacement if new one uploaded
     if (thumbnail) {
-          if (existing.thumbnail) {
-            const oldPath = path.join(__dirname, "..", existing.thumbnail);
-            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-          }
-          existing.thumbnail = thumbnail;
-        }
+      if (category.thumbnail) {
+        const oldPath = path.join(__dirname, "..", category.thumbnail);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+      category.thumbnail = thumbnail;
+    }
 
     category.name = name;
     category.published = published;
