@@ -211,6 +211,32 @@ const getServiceById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+const deleteAllservices = async (req, res) => {
+  try {
+    const { ids } = req.body;
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Invalid request. Provide ServiceCategory IDs." });
+    }
+ 
+   
+
+    
+
+    await Services.deleteMany({ _id: { $in: ids } });
+
+    res.status(200).json({
+      status: 200,
+      message: "Categories Delete successfully.",
+   
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 module.exports = {
-  createservice,updateService,listserviceAdmin,getServiceById
+  createservice,updateService,listserviceAdmin,getServiceById,deleteAllservices
 };
