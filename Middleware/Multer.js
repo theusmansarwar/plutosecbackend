@@ -33,7 +33,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 // Multer Upload Middleware (to handle both resume and thumbnail)
-const upload = multer({ storage: storage, fileFilter: fileFilter }).fields([
+const upload = multer({ storage: storage, fileFilter: fileFilter, limits: { fileSize: 100 * 1024 * 1024 }, }).fields([
   { name: "thumbnail", maxCount: 1 }, // for blog thumbnail
   { name: "resume", maxCount: 1 }, // for resume file
 ]);
