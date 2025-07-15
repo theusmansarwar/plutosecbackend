@@ -262,6 +262,30 @@ const deleteAllservices = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+
+const getservicesSlugs = async (req, res) => {
+  try {
+    const serviceslist = await Services.find({ published: true })
+      .select("slug _id title")
+      .sort({ publishedDate: -1 });
+
+    const totalServices = await Services.countDocuments({ published: true });
+
+    res.status(200).json({
+      totalServices,
+      slugs: serviceslist,
+    });
+  } catch (error) {
+    console.error("Error fetching blog slugs:", error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
 module.exports = {
-  createservice,updateService,listserviceAdmin,getServiceById,deleteAllservices,getServiceBySlug
+  createservice,updateService,listserviceAdmin,getServiceById,deleteAllservices,getServiceBySlug,getservicesSlugs
 };

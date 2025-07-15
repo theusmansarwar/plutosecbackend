@@ -258,6 +258,7 @@ const getGroupedServices = async (req, res) => {
 
 
 
+
 module.exports = {
   addServiceCategory: [upload.single("thumbnail"), addServiceCategory],
   updateServiceCategory: [upload.single("thumbnail"), updateServiceCategory],
@@ -265,5 +266,6 @@ module.exports = {
   viewServiceCategory,
   liveServiceCategory,
   deleteAllCategories,
-  getGroupedServices
+  getGroupedServices,
+
 };
