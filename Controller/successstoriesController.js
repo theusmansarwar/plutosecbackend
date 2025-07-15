@@ -13,10 +13,7 @@ const addSuccessStories = async (req, res) => {
     }
 
     name = name.trim();
-    const existingSuccessStories = await SuccessStories.findOne({ name: new RegExp(`^${name}$`, "i") });
-    if (existingSuccessStories) {
-      return res.status(400).json({ message: "SuccessStories already exists" });
-    }
+  
 
     if (!Array.isArray(items)) {
       items = [];
@@ -63,11 +60,6 @@ const updateSuccessStories = async (req, res) => {
     }
 
     name = name.trim();
-
-    const existing = await SuccessStories.findOne({ name: new RegExp(`^${name}$`, "i") });
-    if (existing && existing._id.toString() !== id) {
-      return res.status(400).json({ message: "SuccessStory name already exists" });
-    }
 
  
     if (!Array.isArray(items)) {

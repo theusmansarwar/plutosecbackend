@@ -14,10 +14,7 @@ const addOfferings = async (req, res) => {
     }
 
     name = name.trim();
-    const existingOfferings = await Offerings.findOne({ name: new RegExp(`^${name}$`, "i") });
-    if (existingOfferings) {
-      return res.status(400).json({ message: "Offerings already exists" });
-    }
+   
 
     if (!Array.isArray(items)) {
       items = [];
@@ -31,7 +28,6 @@ const addOfferings = async (req, res) => {
 
     const offeringsSaved = await newOfferings.save();
 
-    // ✅ Add to corresponding Service
     const updatedService = await Services.findByIdAndUpdate(
       serviceid,
       { $push: { offerings: offeringsSaved._id } },
@@ -66,11 +62,7 @@ const updateOfferings = async (req, res) => {
 
     name = name.trim();
 
-    const existing = await Offerings.findOne({ name: new RegExp(`^${name}$`, "i") });
-    if (existing && existing._id.toString() !== id) {
-      return res.status(400).json({ message: "Offerings name already exists" });
-    }
-
+   
  
     if (!Array.isArray(items)) {
       items = [];
@@ -97,8 +89,6 @@ const updateOfferings = async (req, res) => {
   }
 };
 
-
-// ✅ Delete Offerings (Show List of Related Blogs)
 const deleteOfferings = async (req, res) => {
   try {
     const { id } = req.params;
@@ -123,9 +113,7 @@ const deleteOfferings = async (req, res) => {
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       return res.status(400).json({ message: "Invalid request. Provide Offerings IDs." });
     }
-
     const result = await Offerings.deleteMany({ _id: { $in: ids } });
-
     res.status(200).json({
       status: 200,
       message: "Offerings deleted successfully",
