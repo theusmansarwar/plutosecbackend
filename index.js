@@ -124,21 +124,32 @@ const allowedOrigins = [
   "https://www.plutosec.ca",
   "https://pl0tu.plutosec.ca",
   "https://crm.plutosec.ca",
-  "http://192.168.0.103:3000/"
+
 ];
 
-// ✅ CORS Options
+// // ✅ CORS Options
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("CORS not allowed for this origin"));
+//     }
+//   },
+//   credentials: true,
+//   methods: "GET,POST,PUT,DELETE,OPTIONS",
+//   allowedHeaders: "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+// };
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("CORS not allowed for this origin"));
-    }
-  },
-  credentials: true,
-  methods: "GET,POST,PUT,DELETE,OPTIONS",
-  allowedHeaders: "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  origin: "*", // allow all origins
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: [
+    "Origin",
+    "X-Requested-With",
+    "Content-Type",
+    "Accept",
+    "Authorization",
+  ],
 };
 
 // ✅ Apply CORS Middleware (must come before routes)
