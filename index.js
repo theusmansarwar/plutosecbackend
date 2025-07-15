@@ -117,13 +117,14 @@ const port = process.env.PORT || 4000;
 
 // ✅ Clean Allowed Origins
 const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:5173",
-  "http://localhost:3001",
-  "https://plutosec.ca",
-  "https://www.plutosec.ca",
-  "https://pl0tu.plutosec.ca",
-  "https://crm.plutosec.ca",
+  // "http://localhost:3000",
+  // "http://localhost:5173",
+  // "http://localhost:3001",
+  // "https://plutosec.ca",
+  // "https://www.plutosec.ca",
+  // "https://pl0tu.plutosec.ca",
+  // "https://crm.plutosec.ca",
+  "*"
 ];
 
 // ✅ CORS Options
