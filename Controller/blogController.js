@@ -474,7 +474,12 @@ const viewblogbytitle = async (req, res) => {
     const { title } = req.query; // use query for search
     
     if (!title) {
-      return res.status(400).json({ message: "Title query is required" });
+         const blogs = await Blogs.find().populate("category");
+           return res.status(200).json({
+      message: "Blogs fetched successfully",
+      count: blogs.length,
+      blogs,
+    });
     }
 
     // Case-insensitive partial match using regex

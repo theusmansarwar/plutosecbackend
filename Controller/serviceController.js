@@ -293,7 +293,13 @@ const viewsearvicebytitle = async (req, res) => {
     const { title } = req.query; // use query for search
     
     if (!title) {
-      return res.status(400).json({ message: "Title query is required" });
+      const services = await Services.find().populate("category");
+
+return res.status(200).json({
+      message: "services fetched successfully",
+      count: services.length,
+      services,
+    });
     }
 
     // Case-insensitive partial match using regex
