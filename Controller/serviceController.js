@@ -286,6 +286,39 @@ const getservicesSlugs = async (req, res) => {
     });
   }
 };
+
+
+const viewsearvicebytitle = async (req, res) => {
+  try {
+    const { title } = req.query; // use query for search
+    
+    if (!title) {
+      return res.status(400).json({ message: "Title query is required" });
+    }
+
+    // Case-insensitive partial match using regex
+    const services = await Services.find({
+      title: { $regex: title, $options: "i" },
+    }).populate("category");
+
+    if (services.length === 0) {
+      return res.status(404).json({ message: "No matching services found" });
+    }
+
+    return res.status(200).json({
+      message: "services fetched successfully",
+      count: services.length,
+      services,
+    });
+  } catch (error) {
+    console.error("Error searching services:", error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
 module.exports = {
-  createservice,updateService,listserviceAdmin,getServiceById,deleteAllservices,getServiceBySlug,getservicesSlugs
+  createservice,updateService,listserviceAdmin,getServiceById,deleteAllservices,getServiceBySlug,getservicesSlugs,viewsearvicebytitle
 };
