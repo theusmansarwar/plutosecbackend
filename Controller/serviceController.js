@@ -163,39 +163,42 @@ const listserviceAdmin = async (req, res) => {
 
     let filter = {};
     if (title) {
+      // Adjust the key if your schema uses 'name' instead of 'title'
       filter.title = { $regex: title, $options: "i" };
     }
 
-    const services = await Services.find(filter)
-      .select("-offerings -description -metaDescription -cta -successstories")
-      .populate("category", "name published thumbnail")
+   
+
+    const servicesList = await Services.find(filter)
+         .select("-offerings -description -metaDescription -cta -successstories")
+      .populate("category", "name published thumbnail") // Optional: exclude fields
       .sort({ createdAt: -1 })
       .limit(limit)
       .skip((page - 1) * limit);
 
-    const total = await Services.countDocuments(filter);
+    const totalServices = await Services.countDocuments(filter);
 
-    if (services.length === 0) {
-      return res.status(404).json({ message: "No matching services found" });
+    if (servicesList.length === 0) {
+      return res.status(404).json({ message: "No matching service found" });
     }
 
     return res.status(200).json({
-      message: "Services fetched successfully",
-      totalservices: total,
-      totalPages: Math.ceil(total / limit),
+      totalServices,
+      totalPages: Math.ceil(totalServices / limit),
       currentPage: page,
       limit: limit,
-      services: services,
+      services: servicesList,
     });
   } catch (error) {
-    console.error("Error fetching/searching services:", error);
-    res.status(500).json({
+    console.error("Error fetching services:", error);
+    return res.status(500).json({
       status: 500,
       message: "Internal server error",
       error: error.message,
     });
   }
 };
+
 
 
 

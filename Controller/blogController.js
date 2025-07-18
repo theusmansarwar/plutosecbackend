@@ -360,55 +360,22 @@ const getFeaturedblogsadmin = async (req, res) => {
 const listblogAdmin = async (req, res) => {
   try {
     const { title } = req.query;
-    const page = parseInt(req.query.page) || 1; // Get page from query, default to 1
-    const limit = parseInt(req.query.limit) || 10; // Get limit from query, default to 10
- let filter = {};
-    if (title) {
-      filter.title = { $regex: title, $options: "i" };
-    }
-    const blogslist = await Blogs.find(filter)
-      .select("-comments -detail -viewedBy ")
-      .sort({ createdAt: -1 })
-      .populate({
-        path: "category",
-        model: "Category", // Explicitly specifying model
-      })
-      .limit(limit)
-      .skip((page - 1) * limit);
-
-    const totalBlogs = await Blogs.countDocuments(filter);
- if (blogslist.length === 0) {
-      return res.status(404).json({ message: "No matching blog found" });
-    }
-    res.status(200).json({
-      totalBlogs,
-      totalPages: Math.ceil(totalBlogs / limit),
-      currentPage: page,
-      limit: limit,
-      blogs: blogslist,
-    });
-  } catch (error) {
-    console.error("Error fetching blogs:", error);
-    res.status(500).json({
-      status: 500,
-      message: "Internal server error",
-      error: error.message,
-    });
-  }
-};
-const listblogWritter = async (req, res) => {
-  try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const search = req.query.search || "";
 
-    // Case-insensitive search on author field
-    const filter = search
-      ? { author: { $regex: new RegExp(search, "i") } }
-      : {};
+    let filter = {};
+    function escapeRegex(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
+
+if (title) {
+  const escapedTitle = escapeRegex(title);
+  filter.title = { $regex: escapedTitle, $options: "i" };
+}
+
 
     const blogslist = await Blogs.find(filter)
-      .select("-comments -detail -viewedBy")
+    .select("-comments -detail -viewedBy -metaDescription -description -thumbnail -faqSchema -slug")
       .sort({ createdAt: -1 })
       .populate({
         path: "category",
@@ -419,11 +386,75 @@ const listblogWritter = async (req, res) => {
 
     const totalBlogs = await Blogs.countDocuments(filter);
 
-    res.status(200).json({
+    if (blogslist.length === 0) {
+      return res.status(404).json({ message: "No matching service found" });
+    }
+
+    return res.status(200).json({
       totalBlogs,
       totalPages: Math.ceil(totalBlogs / limit),
       currentPage: page,
       limit: limit,
+      blogs: blogslist,
+    });
+  } catch (error) {
+    console.error("Error fetching services:", error);
+    return res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+const listblogWritter = async (req, res) => {
+  try {
+    const { title, search } = req.query;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    // Author is required
+    if (!search) {
+      return res.status(400).json({ message: "Author (search) is required." });
+    }
+
+    // Escape regex
+    const escapeRegex = (text) =>
+      text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+
+    const escapedAuthor = escapeRegex(search);
+    const filter = {
+      author: { $regex: escapedAuthor, $options: "i" },
+    };
+
+    if (title) {
+      const escapedTitle = escapeRegex(title);
+      filter.title = { $regex: escapedTitle, $options: "i" };
+    }
+
+    const blogslist = await Blogs.find(filter)
+      .select(
+        "-comments -detail -viewedBy -metaDescription -description -thumbnail -faqSchema -slug"
+      )
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "category",
+        model: "Category",
+      })
+      .limit(limit)
+      .skip((page - 1) * limit);
+
+    const totalBlogs = await Blogs.countDocuments(filter);
+
+    if (blogslist.length === 0) {
+      return res.status(404).json({ message: "No matching blogs found." });
+    }
+
+    res.status(200).json({
+      totalBlogs,
+      totalPages: Math.ceil(totalBlogs / limit),
+      currentPage: page,
+      limit,
       blogs: blogslist,
     });
   } catch (error) {
@@ -435,6 +466,7 @@ const listblogWritter = async (req, res) => {
     });
   }
 };
+
 
 const viewblog = async (req, res) => {
   try {
