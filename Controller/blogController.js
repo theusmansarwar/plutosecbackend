@@ -386,9 +386,7 @@ if (title) {
 
     const totalBlogs = await Blogs.countDocuments(filter);
 
-    if (blogslist.length === 0) {
-      return res.status(404).json({ message: "No matching service found" });
-    }
+    
 
     return res.status(200).json({
       totalBlogs,
@@ -446,9 +444,7 @@ const listblogWritter = async (req, res) => {
 
     const totalBlogs = await Blogs.countDocuments(filter);
 
-    if (blogslist.length === 0) {
-      return res.status(404).json({ message: "No matching blogs found." });
-    }
+   
 
     res.status(200).json({
       totalBlogs,
