@@ -15,7 +15,7 @@ const {
     getFeaturedblogs,
       getFeaturedblogsadmin,
       changeblogauther,
-      viewblogbytitle
+    
 } = require("../Controller/blogController");
 
 
@@ -23,7 +23,6 @@ const {
 router.post('/create', createblog);
 router.put('/update/:id', updateblog);
 router.delete('/delete/:id', deleteblog);
-router.get('/search', viewblogbytitle);
 router.delete('/deleteMultiple', deletemultiblog);
 router.get('/view/:slug', viewblog);
 router.get('/viewbyid/:id', viewblogbyid);

@@ -157,27 +157,38 @@ const updateService = async (req, res) => {
 };
 const listserviceAdmin = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1; 
-    const limit = parseInt(req.query.limit) || 10; 
+    const { title } = req.query;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
 
-    const servicelist = await Services.find()
-      .select("-offerings -description -metaDescription -cta -successstories ")
+    let filter = {};
+    if (title) {
+      filter.title = { $regex: title, $options: "i" };
+    }
+
+    const services = await Services.find(filter)
+      .select("-offerings -description -metaDescription -cta -successstories")
+      .populate("category", "name published thumbnail")
       .sort({ createdAt: -1 })
-     .populate("category", "name published thumbnail")
       .limit(limit)
       .skip((page - 1) * limit);
 
-    const totalservices = await Services.countDocuments();
+    const total = await Services.countDocuments(filter);
 
-    res.status(200).json({
-      totalservices,
-      totalPages: Math.ceil(totalservices / limit),
+    if (services.length === 0) {
+      return res.status(404).json({ message: "No matching services found" });
+    }
+
+    return res.status(200).json({
+      message: "Services fetched successfully",
+      totalservices: total,
+      totalPages: Math.ceil(total / limit),
       currentPage: page,
       limit: limit,
-      servicelist: servicelist,
+      services: services,
     });
   } catch (error) {
-    console.error("Error fetching services:", error);
+    console.error("Error fetching/searching services:", error);
     res.status(500).json({
       status: 500,
       message: "Internal server error",
@@ -185,6 +196,7 @@ const listserviceAdmin = async (req, res) => {
     });
   }
 };
+
 
 
 const getServiceById = async (req, res) => {
@@ -288,43 +300,7 @@ const getservicesSlugs = async (req, res) => {
 };
 
 
-const viewsearvicebytitle = async (req, res) => {
-  try {
-    const { title } = req.query; // use query for search
-    
-    if (!title) {
-      const services = await Services.find().populate("category");
 
-return res.status(200).json({
-      message: "services fetched successfully",
-      count: services.length,
-      services,
-    });
-    }
-
-    // Case-insensitive partial match using regex
-    const services = await Services.find({
-      title: { $regex: title, $options: "i" },
-    }).populate("category");
-
-    if (services.length === 0) {
-      return res.status(404).json({ message: "No matching services found" });
-    }
-
-    return res.status(200).json({
-      message: "services fetched successfully",
-      count: services.length,
-      services,
-    });
-  } catch (error) {
-    console.error("Error searching services:", error);
-    res.status(500).json({
-      status: 500,
-      message: "Internal server error",
-      error: error.message,
-    });
-  }
-};
 module.exports = {
-  createservice,updateService,listserviceAdmin,getServiceById,deleteAllservices,getServiceBySlug,getservicesSlugs,viewsearvicebytitle
+  createservice,updateService,listserviceAdmin,getServiceById,deleteAllservices,getServiceBySlug,getservicesSlugs
 };

@@ -359,10 +359,14 @@ const getFeaturedblogsadmin = async (req, res) => {
 };
 const listblogAdmin = async (req, res) => {
   try {
+    const { title } = req.query;
     const page = parseInt(req.query.page) || 1; // Get page from query, default to 1
     const limit = parseInt(req.query.limit) || 10; // Get limit from query, default to 10
-
-    const blogslist = await Blogs.find()
+ let filter = {};
+    if (title) {
+      filter.title = { $regex: title, $options: "i" };
+    }
+    const blogslist = await Blogs.find(filter)
       .select("-comments -detail -viewedBy ")
       .sort({ createdAt: -1 })
       .populate({
@@ -372,8 +376,10 @@ const listblogAdmin = async (req, res) => {
       .limit(limit)
       .skip((page - 1) * limit);
 
-    const totalBlogs = await Blogs.countDocuments();
-
+    const totalBlogs = await Blogs.countDocuments(filter);
+ if (blogslist.length === 0) {
+      return res.status(404).json({ message: "No matching blog found" });
+    }
     res.status(200).json({
       totalBlogs,
       totalPages: Math.ceil(totalBlogs / limit),
@@ -469,42 +475,7 @@ const viewblog = async (req, res) => {
     });
   }
 };
-const viewblogbytitle = async (req, res) => {
-  try {
-    const { title } = req.query; // use query for search
-    
-    if (!title) {
-         const blogs = await Blogs.find().populate("category");
-           return res.status(200).json({
-      message: "Blogs fetched successfully",
-      count: blogs.length,
-      blogs,
-    });
-    }
 
-    // Case-insensitive partial match using regex
-    const blogs = await Blogs.find({
-      title: { $regex: title, $options: "i" },
-    }).populate("category");
-
-    if (blogs.length === 0) {
-      return res.status(404).json({ message: "No matching blogs found" });
-    }
-
-    return res.status(200).json({
-      message: "Blogs fetched successfully",
-      count: blogs.length,
-      blogs,
-    });
-  } catch (error) {
-    console.error("Error searching blogs:", error);
-    res.status(500).json({
-      status: 500,
-      message: "Internal server error",
-      error: error.message,
-    });
-  }
-};
 
 const viewblogbyid = async (req, res) => {
   try {
@@ -583,5 +554,5 @@ module.exports = {
   getFeaturedblogs,
   getFeaturedblogsadmin,
   changeblogauther,
-  viewblogbytitle
+  
 };
