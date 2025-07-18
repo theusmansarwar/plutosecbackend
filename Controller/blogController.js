@@ -469,6 +469,38 @@ const viewblog = async (req, res) => {
     });
   }
 };
+const viewblogbytitle = async (req, res) => {
+  try {
+    const { title } = req.query; // use query for search
+    
+    if (!title) {
+      return res.status(400).json({ message: "Title query is required" });
+    }
+
+    // Case-insensitive partial match using regex
+    const blogs = await Blogs.find({
+      title: { $regex: title, $options: "i" },
+    }).populate("category");
+
+    if (blogs.length === 0) {
+      return res.status(404).json({ message: "No matching blogs found" });
+    }
+
+    return res.status(200).json({
+      message: "Blogs fetched successfully",
+      count: blogs.length,
+      blogs,
+    });
+  } catch (error) {
+    console.error("Error searching blogs:", error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
 const viewblogbyid = async (req, res) => {
   try {
     const { id } = req.params;
@@ -514,6 +546,7 @@ const getblogSlugs = async (req, res) => {
   }
 };
 
+
 const changeblogauther = async (req, res) => {
   try {
     const result = await Blogs.updateMany({}, { $set: { author: "Admin" } });
@@ -544,5 +577,6 @@ module.exports = {
   getblogSlugs,
   getFeaturedblogs,
   getFeaturedblogsadmin,
-  changeblogauther
+  changeblogauther,
+  viewblogbytitle
 };
